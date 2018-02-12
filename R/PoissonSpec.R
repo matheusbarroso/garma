@@ -1,4 +1,5 @@
 #' @include GarmaSpec.R
+NULL
 #' \emph{Poisson}-GARMA specification class.
 #'
 #' An S4 class to represent a \emph{Poisson} garma specification object.

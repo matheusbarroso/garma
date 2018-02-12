@@ -1,5 +1,6 @@
 #' @include GarmaSpec.R
 NULL
+
 #' GARMA specification class generic function.
 #'
 #' A generic function working as a class constructor for the GarmaSpec class.

@@ -1,4 +1,5 @@
 #' @include GarmaSpec.R
+NULL
 #' \emph{Gamma}-GARMA specification class.
 #'
 #' An S4 class to represent a \emph{Gamma} garma specification object.
