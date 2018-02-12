@@ -1,11 +1,24 @@
 Package: garma
 Type: Package
-Title: What the Package Does (Title Case)
+Title: GARMA models: simulation, estimation and diagnosis.
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Author: Matheus de Vasconcellos Barroso
+Maintainer: Matheus de Vasconcellos Barroso <matheus.vb@gmail.com>
+Description: This package simulates Generalized Autoregressive Moving Average Models.
+    Tools for estimation and diagnosis are also provided.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 6.0.1
+Collate: 
+    'GarmaSpec.R'
+    'GammaSpec.R'
+    'GarmaSim.R'
+    'GarmaFit.R'
+    'GarmaFit-Generic.R'
+    'GarmaSim-Generic.R'
+    'GarmaSimBoot.R'
+    'GarmaSimBoot-Generic.R'
+    'GarmaSpec-Generic.R'
+    'PoissonSpec.R'
+    'Resumo Class Methods.r'
