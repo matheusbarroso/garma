@@ -92,3 +92,6 @@ are given by  \code{\link[gamlss.util]{garmaFit}}.}
 \emph{GARMA} object.}
 }}
 
+\author{
+Matheus de Vasconcellos Barroso
+}

@@ -21,3 +21,6 @@ A generic function working as a class constructor for the GarmaSpec class.
 This generic function is designed to be a constructor for the
 GarmaSpec family.
 }
+\author{
+Matheus de Vasconcellos Barroso
+}

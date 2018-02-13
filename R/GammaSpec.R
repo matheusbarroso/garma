@@ -7,6 +7,8 @@ NULL
 #'This is S4 class defines the basic structre of a \emph{Gamma} GARMA
 #'speficication object.
 #'
+#'@author Matheus de Vasconcellos Barroso
+#'
 #'@slot family A character with the tag "GA".
 #'
 #'@slot sigma2 Numeric, specifying the \bold{sigma2} parameter.

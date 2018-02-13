@@ -7,6 +7,8 @@ NULL
 #'This is S4 class defines the basic structre of a \emph{Poisson} GARMA
 #'speficication object.
 #'
+#'@author Matheus de Vasconcellos Barroso
+#'
 #'@slot family A character with the tag "PO".
 #'
 #'@slot alpha Numeric, specifying the \bold{offset} parameter.

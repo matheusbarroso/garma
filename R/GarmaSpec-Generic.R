@@ -8,6 +8,8 @@ NULL
 #' This generic function is designed to be a constructor for the
 #' GarmaSpec family.
 #'
+#'@author Matheus de Vasconcellos Barroso
+#'
 #'@param family A character vector specifying the
 #'family of the specification object. Accepted values
 #'are: "Po" for poisson and "GA"for gamma families.

@@ -23,3 +23,6 @@ of the \emph{Gamma}-GARMA model. See \code{\link{GarmaSpec}} for
 further details.}
 }}
 
+\author{
+Matheus de Vasconcellos Barroso
+}

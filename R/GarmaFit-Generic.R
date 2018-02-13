@@ -9,6 +9,8 @@ NULL
 #' This generic function is designed to be a constructor for the
 #' GarmaFit class.
 #'
+#'@author Matheus de Vasconcellos Barroso
+#'
 #'@param garma An object of the \bold{GarmaSim} class, as provided
 #'by \code{\link{GarmaSim}}.
 #'
@@ -302,7 +304,7 @@ setMethod(f="summary",
             if(object@garma@nmonte > 1)
             {
               db <- plyr::ddply(object@plot.out$db,
-                                "parameters",summarise,Min. = min(value),
+                                "parameters",'summarise',Min. = min(value),
                                 "1st Qu." = quantile(value,(.25),type = 1),
                                 "Median." = quantile(value,(.50),type = 1),
                                 "Mean." = mean(value),

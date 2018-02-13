@@ -85,3 +85,6 @@ should be used. The default value is \code{TRUE}. OBS:paralllel
 replicable examples. Default value is \bold{123}.}
 }}
 
+\author{
+Matheus de Vasconcellos Barroso
+}

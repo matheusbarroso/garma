@@ -8,6 +8,8 @@ NULL
 #'This S4 class defines the basic structre of a \emph{GARMA}
 #'simulation object.
 #'
+#'@author Matheus de Vasconcellos Barroso
+#'
 #'@slot spec An object of the \bold{GarmaSpec} class, as provided
 #'by \code{\link{GarmaSpec}}.
 #'
@@ -36,6 +38,8 @@ setClass("GarmaSim",
          slots = list(spec = "GarmaSpec", nmonte = "numeric",
                       nsteps = "numeric", burnin = "numeric",
                       allow.parallel = 'logical', seed = "numeric",
+                      print.out ="matrix", plot.out ="data.frame",
+                      summary.out = "list",
                       value = "list", order = "numeric"),
          prototype = list(nmonte = 1000, nsteps = 100,
                           burnin = 1000, allow.parallel = TRUE,

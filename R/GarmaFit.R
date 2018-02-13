@@ -7,6 +7,8 @@ NULL
 #'This S4 class defines the basic structre of a \emph{GARMA}
 #'simulation fitted object.
 #'
+#'@author Matheus de Vasconcellos Barroso
+#'
 #'@slot garma An object of the \bold{GarmaSim} class, as provided
 #'by \code{\link{GarmaSim}}.
 #'

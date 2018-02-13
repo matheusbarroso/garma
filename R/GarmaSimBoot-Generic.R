@@ -9,6 +9,8 @@ NULL
 #' This generic function is designed to be a constructor for the
 #' GarmaFit class.
 #'
+#'@author Matheus de Vasconcellos Barroso
+#'
 #'@param sim  An object of the \bold{GarmaSim} class, as provided
 #'by \code{\link{GarmaSim}}.
 #'
@@ -73,7 +75,8 @@ setMethod(f="GarmaSimBoot",
                              try(MBB <- withCallingHandlers(
                                dboot::tsboot2(tseries =
                                                 as.data.frame(cbind(y = j$yt,
-                                                                    obj@sim@spec@X )),
+                                                                    tail(obj@sim@spec@X,
+                                                                         obj@sim@nsteps))),
                                               statistic = bootf,
                                               R = obj@R, l = l,
                                               allow.parallel = obj@allow.parallel,
@@ -92,7 +95,8 @@ setMethod(f="GarmaSimBoot",
                          ,"pass"={MBB <-  withCallingHandlers(
                            dboot::tsboot2(tseries =
                                             as.data.frame(cbind(y = j$yt,
-                                                                obj@sim@spec@X )),
+                                                                tail(obj@sim@spec@X,
+                                                                     obj@sim@nsteps) )),
                                           statistic = bootf,
                                           R = obj@R, l = l,
                                           allow.parallel = obj@allow.parallel,
@@ -117,7 +121,7 @@ setMethod(f="GarmaSimBoot",
 
             slot(obj,"value") <- out
 
-            clean <- llply(obj@value,function(j) {
+            clean <- plyr::llply(obj@value,function(j) {
               boot.function <- obj@boot.function
               plyr::llply(j,.parallel = obj@allow.parallel,
                           .fun = function(x) {
@@ -157,7 +161,7 @@ setMethod(f="GarmaSimBoot",
             plot.out  <- plyr::ldply(clean,function(j) {plyr::ldply(j,
                                                                     function(i){
                                                                       i$parameter <- rownames(i)
-                                                                      melt(i,id.vars="parameter")
+                                                                      reshape2::melt(i,id.vars="parameter")
                                                                     })})
 
             slot(obj,"plot.out") <- plot.out

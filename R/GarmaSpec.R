@@ -5,6 +5,8 @@
 #'This S4 class defines the basic structre of a GARMA
 #'speficication object.
 #'
+#'@author Matheus de Vasconcellos Barroso
+#'
 #'@slot family A character vector specifying the
 #'family of the specification object. Accepted values
 #'are: "Po" for poisson and "GA"for gamma families.

@@ -10,6 +10,8 @@ License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
+Depends: R(>= 3.4.0),dboot(>= 0.1.0), doParallel(>= 1.0.10), doRNG(>= 1.6.6), ggplot2(>= 2.2.1)
+Imports: plyr(>= 1.8.4), reshape2(>= 1.4.2)
 Collate: 
     'GarmaSpec.R'
     'GammaSpec.R'

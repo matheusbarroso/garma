@@ -23,3 +23,6 @@ of the \emph{Poisson}-GARMA model. See \code{\link{GarmaSpec}} for
 further details.}
 }}
 
+\author{
+Matheus de Vasconcellos Barroso
+}

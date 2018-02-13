@@ -55,3 +55,6 @@ equal to the highest order of the GARMA model (i.e.
 \code{max(length(phi),length(theta)}.)}
 }}
 
+\author{
+Matheus de Vasconcellos Barroso
+}

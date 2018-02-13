@@ -20,3 +20,6 @@ A generic function working as a class constructor for the GarmaSim class.
 This generic function is designed to be a constructor for the
 GarmaSim class.
 }
+\author{
+Matheus de Vasconcellos Barroso
+}

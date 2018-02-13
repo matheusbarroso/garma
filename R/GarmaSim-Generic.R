@@ -9,6 +9,8 @@ NULL
 #' This generic function is designed to be a constructor for the
 #' GarmaSim class.
 #'
+#'@author Matheus de Vasconcellos Barroso
+#'
 #'@param spec An object of the GarmaSpec class, as provided
 #'by \code{\link{GarmaSpec}}.
 #'
@@ -137,6 +139,54 @@ setMethod(f="GarmaSim",
             }
             slot(obj,"value") <- out
 
+
+            print.out <- {
+              db <- sapply(obj@value, function(j) j$yt)
+              colnames(db) <- paste('yt',seq_len(obj@nmonte),sep="_")
+              rownames(db) <- seq_len(obj@nsteps)
+              db
+            }
+
+            slot(obj,"print.out") <- print.out
+
+
+            plot.out <- {
+              db <- sapply(x@value, function(j) j$yt)
+              colnames(db) <- paste('yt',seq_len(x@nmonte),sep="_")
+              rownames(db) <- seq_len(x@nsteps)
+              db <- cbind(data.frame(index_t = seq_len(x@nsteps),
+                                     mean_yt =
+                                       apply(db,1,mean)),
+                          as.data.frame(t(apply(db,1,quantile,
+                                                probs=c((1-confInt)/2,0.5,
+                                                        confInt+(1-confInt)/2),
+                                                type=1))))
+
+              colnames(db) <- c("index_t","mean_yt","lim.inf","median","lim.sup")
+              db
+            }
+
+            slot(obj,"plot.out") <- plot.out
+
+            summary.out <- {
+              db <- sapply(object@value, function(j) c(min(j$yt),
+                                                       mean(j$yt),
+                                                       max(j$yt)))
+
+              db1 <- as.data.frame(t(apply(db,1,quantile,
+                                           probs=c((1-0.95)/2,0.5,0.95+(1-0.95)/2),
+                                           type=1)))
+
+              db1 <- round(db1,4)
+
+              db <- round(apply(db,1,mean),4)
+
+              rownames(db1) <- NULL
+
+              list(db=db,db1=d1b)
+            }
+
+
             return(obj)
           }
 )
@@ -185,12 +235,8 @@ setMethod(f="print",
                 "\n")
 
             if(x@nmonte > 1)
-            {db <- sapply(x@value, function(j) j$yt)
-            colnames(db) <- paste('yt',seq_len(x@nmonte),sep="_")
-            rownames(db) <- seq_len(x@nsteps)
-            db
-            } else
-              x@value[[1]]$yt
+              x@print.out else
+                x@value[[1]]$yt
 
           }
 )
@@ -213,13 +259,7 @@ setMethod(f="plot",
           definition = function(x,confInt=0.95,...) {
 
             if(x@nmonte > 1)
-            {db <- sapply(x@value, function(j) j$yt)
-            colnames(db) <- paste('yt',seq_len(x@nmonte),sep="_")
-            rownames(db) <- seq_len(x@nsteps)
-            db <- cbind(data.frame(index_t = seq_len(x@nsteps), mean_yt =
-                                     apply(db,1,mean)),as.data.frame(t(apply(db,1,quantile,
-                                                                             probs=c((1-confInt)/2,0.5,confInt+(1-confInt)/2),type=1))))
-            colnames(db) <- c("index_t","mean_yt","lim.inf","median","lim.sup")
+            {db <- obj@plot.out
 
             ggplot(db, aes(x = index_t, y = mean_yt)) +
               geom_ribbon(aes(ymin = lim.inf, ymax = lim.sup,
@@ -271,12 +311,9 @@ setMethod(f="summary",
                 "-------------------------------------------------------\n")
 
             if(object@nmonte > 1)
-            {db <- sapply(object@value, function(j) c(min(j$yt),mean(j$yt),max(j$yt)))
-            db1 <- as.data.frame(t(apply(db,1,quantile,
-                                         probs=c((1-0.95)/2,0.5,0.95+(1-0.95)/2),type=1)))
-            db1 <- round(db1,4)
-            db <- round(apply(db,1,mean),4)
-            rownames(db1) <- NULL
+            {db <- obj@summary.out$db
+            db2 <- obj@summary.out$db2
+
             cat("Mean Monte Carlo mean values = ",db[2],"with distribution: \n")
             print(db1[2,])
             cat(" \n")
