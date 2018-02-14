@@ -61,7 +61,8 @@ setMethod(f="GarmaFit",
                                           formula = formula(y ~. -1) ,
                                           order = obj@garma@order,
                                           data = as.data.frame(cbind(y = i$yt,
-                                                                     obj@garma@spec@X )),
+                                                                     tail(obj@garma@spec@X,
+                                                                          obj@garma@nsteps) )),
                                           family = obj@garma@spec@family,
                                           control = obj@control
                                         )
@@ -73,7 +74,8 @@ setMethod(f="GarmaFit",
                                       formula = formula(y ~. -1) ,
                                       order = obj@garma@order,
                                       data = as.data.frame(cbind(y = i$yt,
-                                                                 obj@garma@spec@X )),
+                                                                 tail(obj@garma@spec@X,
+                                                                      obj@garma@nsteps))),
                                       family = obj@garma@spec@family,
                                       control = obj@control)
 
@@ -99,7 +101,7 @@ setMethod(f="GarmaFit",
                 db
               }
             } else
-              obj@value[[1]]$coef
+               obj@value[[1]]$coef
 
             slot(obj,"print.out") <- as.matrix(print.out)
 

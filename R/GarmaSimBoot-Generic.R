@@ -152,17 +152,57 @@ setMethod(f="GarmaSimBoot",
                                                                   i$parameter <- rownames(i)
                                                                   i })})
               names(out)[1] <- 'length'
-              out[c(1,ncol(out),seq.int(2,ncol(out)-1))]
-
+              out <- out[c(1,ncol(out),seq.int(2,ncol(out)-1))]
+              if(all(obj@sim@order == c(0,0)))
+                out$parameter <- paste("beta.",out$parameter,sep="")
+              as.data.frame(out)
             }
             slot(obj,"print.out") <- print.out
 
 
-            plot.out  <- plyr::ldply(clean,function(j) {plyr::ldply(j,
-                                                                    function(i){
-                                                                      i$parameter <- rownames(i)
-                                                                      reshape2::melt(i,id.vars="parameter")
-                                                                    })})
+            plot.out  <- {
+
+              create.labels <- function(data,labels =
+                                          c("beta","phi","theta","sigma")) {
+                data$label <- 0
+                for (i in labels) {
+                  data$label[grep(i,data$parameters)] <- i
+                }
+                return(data)
+              }
+
+              create.parameters <- function(x) {
+                par1 <- if(identical(grep("beta", x@print.out$parameter),
+                                     integer(0))) NULL else x@sim@spec@beta.x
+                par2 <- if(identical(grep("phi", x@print.out$parameter),
+                                     integer(0))) NULL else x@sim@spec@phi
+                par3 <- if(identical(grep("theta", x@print.out$parameter),
+                                     integer(0))) NULL else x@sim@spec@theta
+                par4 <- if(identical(grep("sigma", x@print.out$parameter),
+                                     integer(0))) NULL else sqrt(x@sim@spec@sigma2)
+                pars <- c(par1,par2,par3,par4)
+                return(pars)
+              }
+              db <- plyr::ldply(clean,
+                          function(j) {
+                            plyr::ldply(j,
+                                        function(i){
+                                          i$parameter <- rownames(i)
+                                          reshape2::melt(i,id.vars="parameter")
+                                                         })})
+              if(all(obj@sim@order == c(0,0)))
+                db$parameter <- paste("beta.",db$parameter,sep="")
+
+              db2 <- data.frame(parameters = unique(db$parameter),
+                               variable = factor("true.value"),
+                               value = create.parameters(obj))
+              db2 <- create.labels(db2)
+
+              list(db = db, db2=db2) #db2
+
+
+
+            }
 
             slot(obj,"plot.out") <- plot.out
 
@@ -262,13 +302,24 @@ setMethod(f="summary",
 
             if(object@sim@nmonte > 1)
             {
-              db <- ddply(object@plot.out,.variables=c('.id','parameter','variable'), summarise, mean = mean(value))
+              db <- plyr::ddply(
+                object@plot.out,
+                .variables = c('.id','parameter','variable'),
+                summarise,
+                mean = mean(value))
+
               names(db)[1] <- 'length'
               db2 <- lapply(levels(db$variable), function(j) subset(db,variable==j))
               names(db2) <- levels(db$variable)
 
               return(db2)
+            } else {
+              db <- object@plot.out$db2[c('parameters','value')]
+              names(db)[2] <- 'true.value'
+              db <- cbind(db,estimate=object@plot.out$db$value)
+              return(db)
             }
+
           })
 
 
