@@ -158,6 +158,7 @@ setMethod(f="GarmaSimBoot",
 
             print.out <- {
 
+<<<<<<< HEAD
               out <- if(obj@sim@nmonte > 1) {
                 out <- plyr::ldply(clean,function(j) {
                   plyr::ldply(j,
@@ -181,6 +182,16 @@ setMethod(f="GarmaSimBoot",
               if(all(obj@sim@order == c(0,0)))
                 out$parameter <- paste("beta.",out$parameter,sep="")
 
+=======
+              out <- plyr::ldply(clean,function(j) {plyr::ldply(j,
+                                                                function(i){
+                                                                  i$parameter <- rownames(i)
+                                                                  i })})
+              names(out)[1] <- 'length'
+              out <- out[c(1,ncol(out),seq.int(2,ncol(out)-1))]
+              if(all(obj@sim@order == c(0,0)))
+                out$parameter <- paste("beta.",out$parameter,sep="")
+>>>>>>> 6de20fa2d0a90561ad957268a13464e13bcae93d
               as.data.frame(out)
             }
             slot(obj,"print.out") <- print.out
@@ -192,7 +203,11 @@ setMethod(f="GarmaSimBoot",
                                           c("beta","phi","theta","sigma")) {
                 data$label <- 0
                 for (i in labels) {
+<<<<<<< HEAD
                   data$label[grep(i,data$parameter)] <- i
+=======
+                  data$label[grep(i,data$parameters)] <- i
+>>>>>>> 6de20fa2d0a90561ad957268a13464e13bcae93d
                 }
                 return(data)
               }
@@ -209,6 +224,7 @@ setMethod(f="GarmaSimBoot",
                 pars <- c(par1,par2,par3,par4)
                 return(pars)
               }
+<<<<<<< HEAD
               db <- if(obj@sim@nmonte > 1) {
                 plyr::ldply(clean,
                             function(j) {
@@ -233,11 +249,28 @@ setMethod(f="GarmaSimBoot",
               colnames(db)[1] <-"length"
               db <- create.labels(db)
               db2 <- data.frame(parameter = unique(db$parameter),
+=======
+              db <- plyr::ldply(clean,
+                          function(j) {
+                            plyr::ldply(j,
+                                        function(i){
+                                          i$parameter <- rownames(i)
+                                          reshape2::melt(i,id.vars="parameter")
+                                                         })})
+              if(all(obj@sim@order == c(0,0)))
+                db$parameter <- paste("beta.",db$parameter,sep="")
+
+              db2 <- data.frame(parameters = unique(db$parameter),
+>>>>>>> 6de20fa2d0a90561ad957268a13464e13bcae93d
                                variable = factor("true.value"),
                                value = create.parameters(obj))
               db2 <- create.labels(db2)
 
+<<<<<<< HEAD
               list(db = db, db2=db2)
+=======
+              list(db = db, db2=db2) #db2
+>>>>>>> 6de20fa2d0a90561ad957268a13464e13bcae93d
 
 
 
@@ -348,7 +381,11 @@ setMethod(f="summary",
                 summarise,
                 mean = mean(value))
 
+<<<<<<< HEAD
               colnames(db)[1] <- 'length'
+=======
+              names(db)[1] <- 'length'
+>>>>>>> 6de20fa2d0a90561ad957268a13464e13bcae93d
               db2 <- lapply(levels(db$variable), function(j) subset(db,variable==j))
               names(db2) <- levels(db$variable)
 
