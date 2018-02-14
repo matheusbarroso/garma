@@ -121,7 +121,8 @@ setMethod(f="GarmaSimBoot",
 
             slot(obj,"value") <- out
 
-            clean <- plyr::llply(obj@value,function(j) {
+            clean <- if(obj@sim@nmonte > 1)
+              plyr::llply(obj@value,function(j) {
               boot.function <- obj@boot.function
               plyr::llply(j,.parallel = obj@allow.parallel,
                           .fun = function(x) {
@@ -142,19 +143,44 @@ setMethod(f="GarmaSimBoot",
                               )
                             })
                           })
-            }
-            )
+            })else
+              plyr::llply(obj@value,function(j) {
+                boot.function <- obj@boot.function
+                plyr::llply(j,.parallel = obj@allow.parallel,
+                            .fun = function(x) {
+                              with(x,{
+                                colnames(t) <- names(t0)
+                                t
+                              })
+                            })
+              }
+              )
 
             print.out <- {
 
-              out <- plyr::ldply(clean,function(j) {plyr::ldply(j,
-                                                                function(i){
-                                                                  i$parameter <- rownames(i)
-                                                                  i })})
-              names(out)[1] <- 'length'
-              out <- out[c(1,ncol(out),seq.int(2,ncol(out)-1))]
+              out <- if(obj@sim@nmonte > 1) {
+                out <- plyr::ldply(clean,function(j) {
+                  plyr::ldply(j,
+                              function(i){
+                                i$parameter <- rownames(i)
+                                i })})
+                names(out)[1] <- "length"
+                out <- out[c(1,ncol(out),seq.int(2,ncol(out)-1))]
+                out
+                                            } else {
+                  out <- plyr::ldply(clean, reshape2::melt)[,-c(2,5)]
+                  colnames(out) <- c("length","parameter","original")
+                  out
+                      }
+
+              if("beta.null.vector"%in%out$parameter) {
+                ind <-  "beta.null.vector" != out$parameter
+                out <- out[ind,]
+                                                      }
+
               if(all(obj@sim@order == c(0,0)))
                 out$parameter <- paste("beta.",out$parameter,sep="")
+
               as.data.frame(out)
             }
             slot(obj,"print.out") <- print.out
@@ -183,13 +209,25 @@ setMethod(f="GarmaSimBoot",
                 pars <- c(par1,par2,par3,par4)
                 return(pars)
               }
-              db <- plyr::ldply(clean,
-                          function(j) {
-                            plyr::ldply(j,
-                                        function(i){
-                                          i$parameter <- rownames(i)
-                                          reshape2::melt(i,id.vars="parameter")
-                                                         })})
+              db <- if(obj@sim@nmonte > 1) {
+                plyr::ldply(clean,
+                            function(j) {
+                              plyr::ldply(j,
+                                          function(i){
+                                            i$parameter <- rownames(i)
+                                            reshape2::melt(i,id.vars="parameter")
+                                          })})} else {
+                        out <- plyr::ldply(clean, reshape2::melt)[,-c(2,5)]
+                        colnames(out) <- c("length","parameter","value")
+                        out$variable <- factor("original")
+                        out
+
+                                          }
+              if("beta.null.vector"%in%db$parameter) {
+                ind <-  "beta.null.vector" != db$parameter
+                db <- db[ind,]
+              }
+
               if(all(obj@sim@order == c(0,0)))
                 db$parameter <- paste("beta.",db$parameter,sep="")
               colnames(db)[1] <-"length"
@@ -265,6 +303,7 @@ setMethod(f="print",
                 "Estimated parameters: \n\n")
 
             x@print.out
+
 
           }
 )
@@ -342,15 +381,24 @@ setMethod(f="summary",
 
 setMethod(f="plot",
           signature = "GarmaSimBoot",
-          definition = function(x,scales = "free",...) {
+          definition = function(x,scales = "free",variable="Mean.",...) {
             if(!scales%in%c('fixed', 'free_x', 'free_y', 'free'))
               stop("invalid value of scales, accepted values:
                    fixed', 'free_x', 'free_y', 'free' ")
+            if(x@sim@nmonte == 1)
+              variable <- "original"
 
             db <- x@plot.out[['db']]
-            db <- db[db$variable == "original",]
-            db2 <- x@plot.out[['db2']]
 
+            if(!(variable%in%levels(db$variable)))
+              stop(paste("Accepted values of 'variable' are:",levels(db$variable)))
+
+            db <- db[db$variable == variable,]
+            ind <- !(is.na(db$value)|is.nan(db$value)|is.infinite(db$value))
+            db <- db[ind,]
+            db2 <- x@plot.out[['db2']]
+            db2 <-db2[db2$parameter%in%unique(db$parameter),]
+            names(db2)[1] <- "true.value"
             if((length(x@l) > 1)&&(x@sim@nmonte > 1))
             {
               names(db2)[1] <- "true.value"
@@ -365,7 +413,7 @@ setMethod(f="plot",
                   ggtitle(paste("Simulated", paste(x@sim@spec@family,"-Garma(",
                                                    x@sim@order[1],",",x@sim@order[2],"): ",	sep=""),
                                 " Average Bootstrap Estimates from ",x@sim@nmonte,
-                                "Monte Carlo Simulation")) +
+                                "Monte Carlo Simulations")) +
                   theme(plot.title=element_text(size=rel(1.2), lineheight=.9,
                                                 face="bold.italic", colour="gray26",hjust=0.5))
 
@@ -393,7 +441,7 @@ setMethod(f="plot",
                     geom_density(alpha = 0.2) +
                     geom_vline(data=db2,aes(xintercept=value,
                                             colour=true.value),size=1,linetype="dashed")+
-                    facet_grid(label,scales=scales) +
+                    facet_grid(label~.,scales=scales) +
                     ggtitle(paste("Simulated", paste(x@sim@spec@family,"-Garma(",
                                                      x@sim@order[1],",",x@sim@order[2],"): ",	sep=""),
                                   " Average Bootstrap Estimates from ",x@sim@nmonte,
@@ -406,6 +454,7 @@ setMethod(f="plot",
                     geom_density(alpha = 0.2) +
                     geom_vline(data=db2,aes(xintercept=value,
                                             colour=true.value),size=1,linetype="dashed")+
+                    facet_grid(length~.,scales=scales)+
                     ggtitle(paste("Simulated", paste(x@sim@spec@family,"-Garma(",
                                                      x@sim@order[1],",",x@sim@order[2],"): ",	sep=""),
                                   " Average Bootstrap Estimates from ",x@sim@nmonte,
@@ -419,16 +468,12 @@ setMethod(f="plot",
 
 
               } else  {
-                names(db2)[1] <- "true.value"
-                db <- x@value[[1]][[1]]$t
-                colnames(db) <- names(x@value[[1]][[1]]$t0)
-                db <- reshape2::melt(db)[-1]
-                names(db)[1] <- "parameter"
 
                 ggplot(db, aes(value, fill = parameter)) +
                   geom_density(alpha = 0.2) +
                   geom_vline(data=db2,aes(xintercept=value,
                                           colour=true.value),size=1,linetype="dashed")+
+                  facet_grid(length~.,scales=scales)+
                   ggtitle(paste("Simulated", paste(x@sim@spec@family,"-Garma(",
                                                    x@sim@order[1],",",x@sim@order[2],"): ",	sep=""),
                                 " Bootstrap Distribution from ",x@sim@nmonte,
