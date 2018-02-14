@@ -133,8 +133,9 @@ setMethod(f="GarmaSim",
 
 
               }
-              db[seq.int(from = nrow(db)-obj@nsteps + 1,
-                         to = nrow(db)),]
+              tail(db,obj@nsteps)
+             # db[seq.int(from = nrow(db)-obj@nsteps + 1,
+                    #     to = nrow(db)),]
 
             }
             slot(obj,"value") <- out
@@ -151,25 +152,17 @@ setMethod(f="GarmaSim",
 
 
             plot.out <- {
-              db <- sapply(x@value, function(j) j$yt)
-              colnames(db) <- paste('yt',seq_len(x@nmonte),sep="_")
-              rownames(db) <- seq_len(x@nsteps)
-              db <- cbind(data.frame(index_t = seq_len(x@nsteps),
-                                     mean_yt =
-                                       apply(db,1,mean)),
-                          as.data.frame(t(apply(db,1,quantile,
-                                                probs=c((1-confInt)/2,0.5,
-                                                        confInt+(1-confInt)/2),
-                                                type=1))))
+              db <- sapply(obj@value, function(j) j$yt)
+              colnames(db) <- paste('yt',seq_len(obj@nmonte),sep="_")
+              rownames(db) <- seq_len(obj@nsteps)
 
-              colnames(db) <- c("index_t","mean_yt","lim.inf","median","lim.sup")
-              db
+              as.data.frame(db)
             }
 
             slot(obj,"plot.out") <- plot.out
 
             summary.out <- {
-              db <- sapply(object@value, function(j) c(min(j$yt),
+              db <- sapply(obj@value, function(j) c(min(j$yt),
                                                        mean(j$yt),
                                                        max(j$yt)))
 
@@ -183,9 +176,9 @@ setMethod(f="GarmaSim",
 
               rownames(db1) <- NULL
 
-              list(db=db,db1=d1b)
+              list(db=db,db1=db1)
             }
-
+            slot(obj,"summary.out") <- summary.out
 
             return(obj)
           }
@@ -259,8 +252,16 @@ setMethod(f="plot",
           definition = function(x,confInt=0.95,...) {
 
             if(x@nmonte > 1)
-            {db <- obj@plot.out
+            {db <- x@plot.out
+            db <- cbind(data.frame(index_t = seq_len(x@nsteps),
+                                   mean_yt =
+                                     apply(db,1,mean)),
+                        as.data.frame(t(apply(db,1,quantile,
+                                              probs=c((1-confInt)/2,0.5,
+                                                      confInt+(1-confInt)/2),
+                                              type=1))))
 
+            colnames(db) <- c("index_t","mean_yt","lim.inf","median","lim.sup")
             ggplot(db, aes(x = index_t, y = mean_yt)) +
               geom_ribbon(aes(ymin = lim.inf, ymax = lim.sup,
                               alpha = 0.2)) +  #geom_line(aes(y=median), colour="orange") +
@@ -311,8 +312,8 @@ setMethod(f="summary",
                 "-------------------------------------------------------\n")
 
             if(object@nmonte > 1)
-            {db <- obj@summary.out$db
-            db2 <- obj@summary.out$db2
+            {db <- object@summary.out$db
+            db1 <- object@summary.out$db1
 
             cat("Mean Monte Carlo mean values = ",db[2],"with distribution: \n")
             print(db1[2,])
