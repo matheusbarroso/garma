@@ -6,6 +6,7 @@
 \alias{GarmaSimBoot,ANY-method}
 \alias{print,GarmaSimBoot-method}
 \alias{summary,GarmaSimBoot-method}
+\alias{plot,GarmaSimBoot-method}
 \title{\emph{GARMA} simulation bootstrap class.}
 \usage{
 \S4method{GarmaSimBoot}{ANY}(sim, ...)
@@ -13,6 +14,9 @@
 \S4method{print}{GarmaSimBoot}(x)
 
 \S4method{summary}{GarmaSimBoot}(object, ...)
+
+\S4method{plot}{GarmaSimBoot}(x, scales = "free", variable = "Mean.",
+  type = "default", ...)
 }
 \arguments{
 \item{sim}{An object of the \bold{GarmaSim} class, as provided
@@ -25,6 +29,20 @@ check the \bold{slots} arguments.}
 by \code{\link{GarmaSimBoot}}.}
 
 \item{object}{An object of the GarmaSimBoot class, as provided
+by \code{\link{GarmaSimBoot}}.}
+
+\item{scales}{A character specifying if the scales should be free or not.
+The default value is \code{"free"} and accepted values are:
+\code{'fixed', 'free_x', 'free_y' and 'free'}.}
+
+\item{variable}{A string with the name of the statistic to plot.
+The default value is the Mean of the replicates. Also, note
+that if \code{x@sim@nmonte = 1} there is no statistic being 
+computed and only the default value of
+'original' is accepted. Any other option for \code{variable}
+is overwritten.}
+
+\item{x}{An object of the GarmaSimBoot class, as provided
 by \code{\link{GarmaSimBoot}}.}
 }
 \description{
@@ -45,6 +63,8 @@ This method creates an object of the GarmaSimBoot class.
 \item \code{print}: Print method for a GarmaSimBoot object.
 
 \item \code{summary}: Summary method for a GarmaSimBoot object.
+
+\item \code{plot}: Plot method for a GarmaSimBoot object.
 }}
 
 \section{Slots}{

@@ -112,6 +112,8 @@ setGeneric("GarmaSimBoot", function(sim, ...) {
 #'l = c(10,15))
 #'print(ex3)
 #'plot(ex3)
+#'plot(ex3, variable = "Median.")
+#'plot(ex3, type = "original-bias")
 #'summary(ex3)
 #'
 #'
@@ -122,6 +124,8 @@ setGeneric("GarmaSimBoot", function(sim, ...) {
 #'l = c(15,20,30))
 #'print(ex4)
 #'plot(ex4)
+#'plot(ex4, variable = "1st Qu.")
+#'plot(ex4, type = "original-bias")
 #'summary(ex4)
 #'
 #'
@@ -132,6 +136,7 @@ setGeneric("GarmaSimBoot", function(sim, ...) {
 #'l = c(20))
 #'print(ex5)
 #'plot(ex5)
+#'plot(ex5, type = "original-bias")
 #'summary(ex5)
 #'
 #'
@@ -142,9 +147,9 @@ setGeneric("GarmaSimBoot", function(sim, ...) {
 #'l = c(5,30))
 #'print(ex6)
 #'plot(ex6)
+#'plot(ex6, type = "original-bias")
 #'summary(ex6)
 #'
-
 
 
 
@@ -379,28 +384,28 @@ setMethod(f="print",
                 "A",paste(x@sim@spec@family,"-Garma(",
                           x@sim@order[1],",",x@sim@order[2],")",
                           sep=""),"simulation bootstrap object: \n\n",
-
+                
                 if(x@sim@order[1] != 0) paste(
                   if(x@sim@order[1] == 1) "phi" else
                     paste("phi",1:x@sim@order[1],
                           " = ",sep=""), x@sim@spec@phi,"\n"),
-
+                
                 if(x@sim@order[2] != 0) paste(
                   if(x@sim@order[2] == 1) "theta" else
                     paste("theta",1:x@sim@order[2],
                           " = ",sep=""), x@sim@spec@theta,"\n"),
-
+                
                 if(TRUE%in%(colnames(x@sim@spec@X) != "null.vector"))
                   paste(paste("beta.",colnames(x@sim@spec@X), " = ",
                               sep=""), x@sim@spec@beta.x,"\n"),
-
+                
                 if(TRUE%in%(x@sim@spec@mu0 != 0)) paste(paste("mu0[", #altersr
                                                               1:length(x@sim@spec@mu0),"] = ",sep=""),
                                                         x@sim@spec@mu0,"\n"),
-
+                
                 if((x@sim@spec@family == "GA")&&(TRUE%in%(x@sim@spec@sigma2 != 0)))
                   paste("sigma2 = ", paste(x@sim@spec@sigma2),"\n"),
-
+                
                 "Number of Monte Carlo Simulations ('nmonte') = ",x@sim@nmonte,"\n",
                 "Time Series Length ('nsteps') = ",x@sim@nsteps,"\n",
                 "Burn-in ('burnin') = ",x@sim@burnin,"\n",
@@ -409,19 +414,16 @@ setMethod(f="print",
                 "n.try = ",x@n.try,"\n",
                 "block length = ", x@l,"\n",
                 "R = ",x@R,"\n",
-
+                
                 "-------------------------------------------------------\n",
                 "\n",
                 "Estimated parameters: \n\n")
-
+            
             x@print.out
-
-
+            
+            
           }
 )
-
-
-
 
 #'@describeIn GarmaSimBoot
 #'
@@ -488,46 +490,66 @@ setMethod(f="summary",
 
           })
 
-
-	
-	
-
-
-#'@describeIn GarmaFit
+#'@describeIn GarmaSimBoot
 #'
-#' Plot method for a GarmaFit object.
+#' Plot method for a GarmaSimBoot object.
 #'
-#'@param x An object of the GarmaFit class, as provided
-#'by \code{\link{GarmaFit}}.
+#'@param x An object of the GarmaSimBoot class, as provided
+#'by \code{\link{GarmaSimBoot}}.
 #'
 #'@param scales A character specifying if the scales should be free or not.
 #'The default value is \code{"free"} and accepted values are:
 #' \code{'fixed', 'free_x', 'free_y' and 'free'}.
+#' 
+#' @param variable A string with the name of the statistic to plot.
+#' The default value is the Mean of the replicates. Also, note
+#' that if \code{x@sim@nmonte = 1} there is no statistic being 
+#' computed and only the default value of
+#' 'original' is accepted. Any other option for \code{variable}
+#' is overwritten. 
+#' 
 
 setMethod(f="plot",
           signature = "GarmaSimBoot",
-          definition = function(x,scales = "free",variable="Mean.",...) {
+          definition = function(x,scales = "free",
+                                variable= "Mean.",
+                                type = "default",...) {
             if(!scales%in%c('fixed', 'free_x', 'free_y', 'free'))
               stop("invalid value of scales, accepted values:
                    fixed', 'free_x', 'free_y', 'free' ")
             if(x@sim@nmonte == 1)
+            {
               variable <- "original"
+              type = "default"
+            }
+            
 
             db <- x@plot.out[['db']]
 
             if(!(variable%in%levels(db$variable)))
               stop(paste("Accepted values of 'variable' are:",levels(db$variable)))
-
-            db <- db[db$variable == variable,]
+            
+            if(!type%in%c("default","original-bias"))
+              stop("Accepted values of 'type' are:
+                         'default' and 'original-bias'")
+            if(type == "original-bias")
+              db <- db[(db$variable=='original')|
+                         (db$variable=='bias corrected'),] else 
+              db <- db[db$variable == variable,]         
+                           
+                         
+            
             ind <- !(is.na(db$value)|is.nan(db$value)|is.infinite(db$value))
             db <- db[ind,]
             db2 <- x@plot.out[['db2']]
             db2 <-db2[db2$parameter%in%unique(db$parameter),]
-            names(db2)[1] <- "true.value"
-            if((length(x@l) > 1)&&(x@sim@nmonte > 1))
+            
+            
+            if(type == 'default')
+            { names(db2)[1] <- "true.value"
+              if((length(x@l) > 1)&&(x@sim@nmonte > 1))
             {
-              names(db2)[1] <- "true.value"
-
+              
               if((length(x@sim@spec@beta.x) > 1)||
                  (x@sim@order[1] >1)||(x@sim@order[2] >1)) {
                 ggplot(db, aes(value, fill = parameter)) +
@@ -609,6 +631,35 @@ setMethod(f="plot",
 
             }
 
+            } else {
+              db3 <- plyr::ddply(db,
+                                .variables = c("length","parameter","variable"),
+                                'summarise',
+                                mean=mean(value))
+              db3 <- db3[db3$variable=='original'|db3$variable=='bias corrected',]
+              colnames(db3)[4] <- "value"
+              db4 <- do.call("rbind", replicate(length(unique(db$length)), db2[,-4], simplify = FALSE)) 
+              db4$length <- sort(rep(unique(db$length),nrow(db2)))
+
+              db2 <- rbind(db3,db4)
+              db2$variable <- paste("Mean - ",db2$variable, sep = "")
+                
+              ggplot(db, aes(value, fill = variable)) +
+                geom_density(alpha = 0.2) +
+                geom_vline(data=db2,aes(xintercept=value,
+                                        colour=variable),size=1,linetype="dashed")+
+                facet_grid(length~parameter,scales=scales) +
+                ggtitle(paste("Simulated", paste(x@sim@spec@family,"-Garma(",
+                                                 x@sim@order[1],",",x@sim@order[2],"): ",	sep=""),
+                              " Average Bootstrap Estimates from ",x@sim@nmonte,
+                              "Monte Carlo Simulations")) +
+                theme(plot.title=element_text(size=rel(1.2), lineheight=.9,
+                                              face="bold.italic", colour="gray26",hjust=0.5))
+                    }
+            
           }
 )
+
+
+
 
