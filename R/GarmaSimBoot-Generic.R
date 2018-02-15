@@ -16,7 +16,7 @@ NULL
 #'
 #'@param \dots Further arguments that specify the GarmaSimBoot object,
 #'check the \bold{slots} arguments.
-# #'@describeIn GarmaSimBoot
+#'
 
 
 setGeneric("GarmaSimBoot", function(sim, ...) {
@@ -37,6 +37,116 @@ setGeneric("GarmaSimBoot", function(sim, ...) {
 #'
 #'@param \dots Further arguments that specify the GarmaSimBoot object,
 #'check the \bold{slots} arguments.
+#'
+#'@examples ##Some Specs/Simulations for different outputs:
+#'Sim1 <- GarmaSim(
+#'GarmaSpec("GA",
+#'phi = 0.5,
+#'beta.x = 1,
+#'sigma2 =2,
+#'X = as.matrix(
+#'  data.frame(
+#'    x1 = rep(10,101)))), 
+#'nmonte = 1, burnin = 0)
+#'
+#'
+#'Sim2 <- GarmaSim(
+#'GarmaSpec("PO",
+#'phi = 0.2,
+#'theta = c(0.1, 0.3, 0.5),
+#'mu0 = 1:3), 
+#'nmonte = 10, burnin = 0)
+#'
+#'
+#'Sim3 <- GarmaSim(
+#'GarmaSpec("PO",
+#'beta.x = c(1,1),
+#'X = as.matrix(
+#'  data.frame(
+#'  intercept = rep(1,1100),
+#'    x1 = c(rep(7,100),
+#'        rep(2,1000))))), 
+#'nmonte = 10)
+#'
+#'
+#'Sim4 <- GarmaSim(
+#'GarmaSpec("GA",
+#'phi = 0.5,
+#'beta.x = 1,
+#'sigma2 =2,
+#'X = as.matrix(
+#'  data.frame(
+#'    x1 = rep(10,101)))), 
+#'nmonte = 10, burnin = 0)
+#'
+#'
+#' ##Example of the GarmaSimBoot methods:
+#'
+#'# one monte carlo, one block length:
+#'ex1 <- GarmaSimBoot(
+#'Sim1, l = 20)
+#'print(ex1)
+#'plot(ex1)
+#'summary(ex1)
+#'
+#'
+#'# one monte carlo, multiple block lengths +
+#'# a user defined function to apply in the 
+#'# bootstrap resamples (0.1 and 0.9 quantiles):
+#'ex2 <- GarmaSimBoot(
+#'Sim1, 
+#'l = c(4,7,10),
+#'boot.function = 
+#'  function(x) quantile(x,
+#'     probs = c(0.1,0.9))
+#')
+#'print(ex2)
+#'plot(ex2)
+#'summary(ex2)
+#'
+#'          
+#'# 10 monte carlo sim, multiple block lengths +
+#'# max(order(garma)) > 1:
+#'ex3 <- GarmaSimBoot(
+#'Sim2, 
+#'l = c(10,15))
+#'print(ex3)
+#'plot(ex3)
+#'summary(ex3)
+#'
+#'
+#'# 10 monte carlo sim, multiple block lengths +
+#'# order = c(0,0); no AR/MA term:
+#'ex4 <- GarmaSimBoot(
+#'Sim3, 
+#'l = c(15,20,30))
+#'print(ex4)
+#'plot(ex4)
+#'summary(ex4)
+#'
+#'
+#'# 10 monte carlo sim, single block lengths +
+#'# ARMA+Beta.x
+#'ex5 <- GarmaSimBoot(
+#'Sim4, 
+#'l = c(20))
+#'print(ex5)
+#'plot(ex5)
+#'summary(ex5)
+#'
+#'
+#'# 10 monte carlo sim, two block lengths +
+#'# ARMA+Beta.x
+#'ex6 <- GarmaSimBoot(
+#'Sim4, 
+#'l = c(5,30))
+#'print(ex6)
+#'plot(ex6)
+#'summary(ex6)
+#'
+
+
+
 
 
 
@@ -262,7 +372,6 @@ setMethod(f="GarmaSimBoot",
 #'by \code{\link{GarmaSimBoot}}.
 #'
 
-
 setMethod(f="print",
           signature = "GarmaSimBoot",
           definition = function(x) {
@@ -346,30 +455,42 @@ setMethod(f="summary",
             if(object@sim@nmonte > 1)
             {
               db <- plyr::ddply(
-                object@plot.out,
-                .variables = c('.id','parameter','variable'),
-                summarise,
+                object@plot.out$db,
+                .variables = c('length','parameter','variable'),
+                'summarise',
                 mean = mean(value))
 
 
               colnames(db)[1] <- 'length'
               db2 <- lapply(levels(db$variable), function(j) subset(db,variable==j))
               names(db2) <- levels(db$variable)
-
-              return(db2)
-            } else {
-              db <- object@plot.out$db2[c('parameters','value')]
+			  
+			  db <- object@plot.out$db2[c('parameter','value')]
               names(db)[2] <- 'true.value'
-              db <- cbind(db,estimate=object@plot.out$db$value)
-              return(db)
+			
+              return(list("True values"= db,
+				Estimates = db2))
+            } else {
+              db2 <- object@plot.out$db2[c('parameter','value')]
+              names(db2)[2] <- 'true.value'
+			  db <- plyr::ddply(
+			  object@plot.out$db, 
+			  .variables = c("length","parameter","variable"),
+			  'summarise',
+			  mean=mean(value))
+			  colnames(db)[4] <- "Mean Est."	
+              db <- db[order(db$length, decreasing=T),][order(db$variable),]
+			  
+			  out <- list("True values" = db2,
+				Estimates = db)
+              return(out)
             }
 
           })
 
 
-
-
-
+	
+	
 
 
 #'@describeIn GarmaFit
