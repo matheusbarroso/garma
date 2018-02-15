@@ -41,11 +41,27 @@ NULL
 #'@slot control List. This is passed to the garmaFit2 function. The options
 #'are given by  \code{\link[gamlss.util]{garmaFit}}.
 #'
-#'@slot print.out A matrix with values to be used by \code{print}.
+#'@slot print.out A data.frame with values to be used by \code{print}.
+#' If sim@nmonte > 1 the rows display the the statitic computed 
+#' for each parameter in the model for all \code{l} and \code{nmonte}.
+#' The columns exhibit some chosen statistics that are 
+#' computed with the resampled values, such as the original 
+#' value (\code{l =n}), the estimated bias, the bias corrected
+#' parameter estimate, the std. error etc. Though, if
+#' sim@nmonte == 1, no statistic is computed and the estimated 
+#' parameters in each block length is reported. 
 #'
 #'@slot plot.out  A list with two elements: \describe{
-#'   \item{db}{A data frame with XXXX}
-#'   \item{db2}{A data frame with XXXX}
+#'   \item{db}{A data frame with columns: length, parameter,
+#'   variable (original, bias corrected etc...), value and 
+#'   label (grouping variable used for some plots). Each row
+#'   represents a statistic computed for a given block length, 
+#'   \code{nmonte} and parameter. Note that if \code{nmonte = 1}
+#'   no summarisation is performed and the original parameter
+#'   values are returned.}
+#'   \item{db2}{A data frame with columns parameter, variable, 
+#'   value and label and rows the model parameters. The values 
+#'   are the simulated parameter values or parameter true-values.}
 #' } with values to be used by \code{plot}.
 #'
 #'@slot value A list, where each element is a fitted

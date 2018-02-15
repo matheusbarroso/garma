@@ -81,17 +81,141 @@ wants to specify a quantity not being reported, as an example consider the
 \item{\code{control}}{List. This is passed to the garmaFit2 function. The options
 are given by  \code{\link[gamlss.util]{garmaFit}}.}
 
-\item{\code{print.out}}{A matrix with values to be used by \code{print}.}
+\item{\code{print.out}}{A data.frame with values to be used by \code{print}.
+If sim@nmonte > 1 the rows display the the statitic computed 
+for each parameter in the model for all \code{l} and \code{nmonte}.
+The columns exhibit some chosen statistics that are 
+computed with the resampled values, such as the original 
+value (\code{l =n}), the estimated bias, the bias corrected
+parameter estimate, the std. error etc. Though, if
+sim@nmonte == 1, no statistic is computed and the estimated 
+parameters in each block length is reported.}
 
 \item{\code{plot.out}}{A list with two elements: \describe{
-  \item{db}{A data frame with XXXX}
-  \item{db2}{A data frame with XXXX}
+  \item{db}{A data frame with columns: length, parameter,
+  variable (original, bias corrected etc...), value and 
+  label (grouping variable used for some plots). Each row
+  represents a statistic computed for a given block length, 
+  \code{nmonte} and parameter. Note that if \code{nmonte = 1}
+  no summarisation is performed and the original parameter
+  values are returned.}
+  \item{db2}{A data frame with columns parameter, variable, 
+  value and label and rows the model parameters. The values 
+  are the simulated parameter values or parameter true-values.}
 } with values to be used by \code{plot}.}
 
 \item{\code{value}}{A list, where each element is a fitted
 \emph{GARMA} object.}
 }}
 
+\examples{
+##Some Specs/Simulations for different outputs:
+Sim1 <- GarmaSim(
+GarmaSpec("GA",
+phi = 0.5,
+beta.x = 1,
+sigma2 =2,
+X = as.matrix(
+ data.frame(
+   x1 = rep(10,101)))), 
+nmonte = 1, burnin = 0)
+
+
+Sim2 <- GarmaSim(
+GarmaSpec("PO",
+phi = 0.2,
+theta = c(0.1, 0.3, 0.5),
+mu0 = 1:3), 
+nmonte = 10, burnin = 0)
+
+
+Sim3 <- GarmaSim(
+GarmaSpec("PO",
+beta.x = c(1,1),
+X = as.matrix(
+ data.frame(
+ intercept = rep(1,1100),
+   x1 = c(rep(7,100),
+       rep(2,1000))))), 
+nmonte = 10)
+
+
+Sim4 <- GarmaSim(
+GarmaSpec("GA",
+phi = 0.5,
+beta.x = 1,
+sigma2 =2,
+X = as.matrix(
+ data.frame(
+   x1 = rep(10,101)))), 
+nmonte = 10, burnin = 0)
+
+
+##Example of the GarmaSimBoot methods:
+
+# one monte carlo, one block length:
+ex1 <- GarmaSimBoot(
+Sim1, l = 20)
+print(ex1)
+plot(ex1)
+summary(ex1)
+
+
+# one monte carlo, multiple block lengths +
+# a user defined function to apply in the 
+# bootstrap resamples (0.1 and 0.9 quantiles):
+ex2 <- GarmaSimBoot(
+Sim1, 
+l = c(4,7,10),
+boot.function = 
+ function(x) quantile(x,
+    probs = c(0.1,0.9))
+)
+print(ex2)
+plot(ex2)
+summary(ex2)
+
+         
+# 10 monte carlo sim, multiple block lengths +
+# max(order(garma)) > 1:
+ex3 <- GarmaSimBoot(
+Sim2, 
+l = c(10,15))
+print(ex3)
+plot(ex3)
+summary(ex3)
+
+
+# 10 monte carlo sim, multiple block lengths +
+# order = c(0,0); no AR/MA term:
+ex4 <- GarmaSimBoot(
+Sim3, 
+l = c(15,20,30))
+print(ex4)
+plot(ex4)
+summary(ex4)
+
+
+# 10 monte carlo sim, single block lengths +
+# ARMA+Beta.x
+ex5 <- GarmaSimBoot(
+Sim4, 
+l = c(20))
+print(ex5)
+plot(ex5)
+summary(ex5)
+
+
+# 10 monte carlo sim, two block lengths +
+# ARMA+Beta.x
+ex6 <- GarmaSimBoot(
+Sim4, 
+l = c(5,30))
+print(ex6)
+plot(ex6)
+summary(ex6)
+
+}
 \author{
 Matheus de Vasconcellos Barroso
 }
