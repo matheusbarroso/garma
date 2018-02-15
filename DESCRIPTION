@@ -5,7 +5,7 @@ Version: 0.1.0
 Author: Matheus de Vasconcellos Barroso
 Maintainer: Matheus de Vasconcellos Barroso <matheus.vb@gmail.com>
 Description: This package simulates Generalized Autoregressive Moving Average Models.
-    Tools for estimation and diagnosis are also provided.
+    Tools for simulation, estimation and diagnosis are also provided.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true

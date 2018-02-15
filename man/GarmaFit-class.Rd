@@ -19,7 +19,7 @@
 
 \S4method{summary}{GarmaFit}(object, ...)
 
-\S4method{plot}{GarmaSimBoot}(x, scales = "free", ...)
+\S4method{plot}{GarmaSimBoot}(x, scales = "free", variable = "Mean.", ...)
 }
 \arguments{
 \item{garma}{An object of the \bold{GarmaSim} class, as provided
