@@ -38,8 +38,85 @@ setGeneric("GarmaFit", function(garma, ...) {
 #'
 #'@param \dots Further arguments that specify the GarmaFit object,
 #'check the \bold{slots} arguments.
-
-
+#'
+#'@examples ##Some Specs/Simulations for different outputs:
+#'Sim1 <- GarmaSim(
+#'GarmaSpec("GA",
+#'phi = 0.5,
+#'beta.x = 1,
+#'sigma2 =2,
+#'X = as.matrix(
+#'  data.frame(
+#'    x1 = rep(10,101)))), 
+#'nmonte = 10, burnin = 0)
+#'
+#'Sim2 <- GarmaSim(
+#'GarmaSpec("GA",
+#'phi = 0.5,
+#'beta.x = 1,
+#'sigma2 =2,
+#'X = as.matrix(
+#'  data.frame(
+#'    x1 = rep(10,101)))), 
+#'nmonte = 1, burnin = 0)
+#'
+#'
+#'Sim3 <- GarmaSim(
+#'GarmaSpec("PO",
+#'phi = 0.2,
+#'theta = c(0.1, 0.3, 0.5),
+#'mu0 = 1:3), 
+#'nmonte = 10, burnin = 0)
+#'
+#'
+#'Sim4 <- GarmaSim(
+#'GarmaSpec("PO",
+#'phi = c(0.5,0.15)
+#'beta.x = c(1,1),
+#'X = as.matrix(
+#'  data.frame(
+#'  intercept = rep(1,1102),
+#'    x1 = c(rep(7,100),
+#'        rep(2,1002))))), 
+#'nmonte = 10)
+#'
+#'Sim5 <- GarmaSim(
+#'GarmaSpec("PO",
+#'beta.x = c(0.1,1),
+#'X = as.matrix(
+#'  data.frame(
+#'  intercept = rep(1,1100),
+#'    x1 = c(rep(7,100),
+#'        rep(2,1000))))), 
+#'nmonte = 1)
+#'
+#' ##Example of the GarmaFit methods:
+#' 
+#' ex1 <- GarmaFit(Sim1,errorhandling="try"))
+#'print(fit.ex1)
+#'plot(fit.ex1)
+#'summary(fit.ex1)
+#'
+#' ex2 <- GarmaFit(Sim2)
+#'print(fit.ex2)
+#'plot(fit.ex2)
+#'summary(fit.ex2)
+#'
+#' ex3 <- GarmaFit(Sim3)
+#'print(fit.ex3)
+#'plot(fit.ex3)
+#'summary(fit.ex3)
+#'
+#' ex4 <- GarmaFit(Sim4)
+#'print(fit.ex4)
+#'plot(fit.ex4)
+#'summary(fit.ex4)
+#'
+#' ex5 <- GarmaFit(Sim5)
+#'print(fit.ex5)
+#'plot(fit.ex5)
+#'summary(fit.ex5)
+#'
 
 setMethod(f="GarmaFit",
           definition = function(garma, ...) {

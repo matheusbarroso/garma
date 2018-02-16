@@ -41,6 +41,16 @@ setGeneric("GarmaSpec", function(family, ...) {
 #'are: "Po" for poisson and "GA"for gamma families.
 #'
 #'@param \dots Further arguments that specify the model.
+#'
+#'@examples #PoissonSpec 
+#'GarmaSpec("PO",phi=c(1,1),mu0=c(1,1))
+#'GarmaSpec("PO",beta.x = 1:4)
+#'GarmaSpec("PO",beta.x = 1:4, phi = 4)
+#'#GammaSpec
+#'
+#'GarmaSpec("GA",phi=c(1,1),mu0=c(1,1))
+#'GarmaSpec("GA",beta.x = 1:4)
+#'GarmaSpec("GA",beta.x = 1:4, phi = 4)
 
 
 setMethod(f="GarmaSpec",

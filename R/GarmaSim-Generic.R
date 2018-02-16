@@ -36,9 +36,113 @@ setGeneric("GarmaSim", function(spec, ...) {
 #'
 #'@param \dots Further arguments that specify the simulation object.
 #'Check the \bold{Slots} for further details.
-
-
-
+#'
+#'@examples ##Some Specs/Simulations for different outputs:
+#'
+#'\dontrun{
+#'#Incompatible dimensions x and beta.x:
+#'ex1 <- GarmaSim(
+#'GarmaSpec("GA", 
+#'phi = c(0.2),
+#'theta = c(1,2,3),
+#'mu0 = 1:3,
+#'X = as.matrix(
+#'data.frame(
+#'intercept = rep(4,1100),
+#'x1 = rep(3,1100)))),
+#'nmonte = 2)
+#'
+#'#Incompatible number of rows
+#'ex2 <- GarmaSim(
+#'GarmaSpec("GA", 
+#'phi = c(0.2),
+#'theta = c(1,2,3),
+#'mu0 = 1:3,
+#'beta.x = c(1,2),
+#'X = as.matrix(
+#'data.frame(
+#'intercept = rep(4,1100),
+#'x1 = rep(3,1100)))),
+#'nmonte = 2)
+#'}
+#'
+#'ex3 <- GarmaSim(
+#'GarmaSpec("PO",
+#'beta.x = c(0.1,1),
+#'X = as.matrix(
+#'data.frame(
+#'intercept = rep(10,1100),
+#'x1 = c(rep(7,100),rep(2,1000))))),
+#'nmonte = 1, allow.parallel = TRUE) 
+#'
+#'ex4 <- GarmaSim(
+#'GarmaSpec("PO", 
+#'phi = c(0.2),
+#'theta = c(1,2,3),
+#'mu0 = 1:3),
+#'nmonte = 2)
+#'
+#'ex5 <- GarmaSim(
+#'GarmaSpec("PO", 
+#'mu0 = 10,
+#'phi = 0.15, 
+#'X = as.matrix(
+#'data.frame(
+#'  x1 = rep(10,101)))),
+#'burnin = 0,
+#'nmonte = 10)
+#'
+#'ex6 <- GarmaSim(
+#'GarmaSpec("GA", 
+#'phi = c(0.2),
+#'theta = c(1,2,3),
+#'mu0 = 1:3,
+#'beta.x = c(1,1),
+#'X = as.matrix(
+#'data.frame(
+#'intercept = rep(4,1103),
+#'  x1 = rep(3,1103)))),
+#'nmonte = 2)
+#'
+#'ex7 <- GarmaSim(
+#'GarmaSpec("GA", 
+#'phi = c(0.2),
+#'theta = c(1,2,3),
+#'mu0 = 1:3,
+#'beta.x = c(1,2),
+#'X = as.matrix(
+#'data.frame(
+#'intercept = rep(4,1103),
+#' x1  =rep(3,1103)))),
+#'nmonte = 10)
+#'
+#'ex8 <- GarmaSim(
+#'GarmaSpec("PO", 
+#'phi = c(0.5, 0.15),
+#'mu0 = c(1000, 1100),
+#'beta.x = c(1, 1),
+#'X = as.matrix(
+#'data.frame(
+#'intercept = rep(1, 1102),
+#'x1 = c(rep(7, 100),
+#'rep(2,1002))))),
+#'nmonte = 10))
+#'
+#'ex9 <- GarmaSim(
+#'GarmaSpec("GA"), 
+#'nmonte = 10)
+#'
+#'ex10 <- GarmaSim(
+#'GarmaSpec("PO"), 
+#'nmonte = 10)
+#'
+#'
+#'
+#' ##Example of the GarmaSim methods:
+#'
+#'print(ex1)
+#'plot(ex1)
+#'summary(ex1)
 
 setMethod(f="GarmaSim",
           definition = function(spec, ...) {

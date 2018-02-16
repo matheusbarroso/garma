@@ -12,7 +12,7 @@ NULL
 #'@slot garma An object of the \bold{GarmaSim} class, as provided
 #'by \code{\link{GarmaSim}}.
 #'
-#' @slot allow.parallel  Logical \bold{TRUE/FALSE} indicating
+#'@slot allow.parallel  Logical \bold{TRUE/FALSE} indicating
 #' whether parallel computation via the foreach package
 #' should be used. The default value is \code{TRUE}. OBS:paralllel
 #'  backend must be registered prior to calling \code{\link{GarmaSim}}.
@@ -29,10 +29,18 @@ NULL
 #'are given by  \code{\link[gamlss.util]{garmaFit}}.
 #'
 #'@slot print.out A matrix with values to be used by \code{print}.
+#'The column represents a simulation (\code{nmonte}) and the rows
+#'the estimated parameters.
 #'
 #'@slot plot.out  A list with two elements: \describe{
-#'   \item{db}{A data frame with XXXX}
-#'   \item{db2}{A data frame with XXXX}
+#'   \item{db}{A data frame with columns: parameter,
+#'   value and label (grouping variable used for some plots) 
+#'   If \code{nmonte = 1} there is also variable column. Each row
+#'   represents a statistic computed for a given block length, 
+#'   \code{nmonte} and parameter.} 
+#'   \item{db2}{A data frame with columns parameter, variable, 
+#'   value and label and rows the model parameters. The values 
+#'   are the simulated parameter values or parameter true-values.}
 #' } with values to be used by \code{plot}.
 #'
 #'@slot value A list, where each element is a fitted

@@ -203,6 +203,8 @@ Sim2,
 l = c(10,15))
 print(ex3)
 plot(ex3)
+plot(ex3, variable = "Median.")
+plot(ex3, type = "original-bias")
 summary(ex3)
 
 
@@ -213,6 +215,8 @@ Sim3,
 l = c(15,20,30))
 print(ex4)
 plot(ex4)
+plot(ex4, variable = "1st Qu.")
+plot(ex4, type = "original-bias")
 summary(ex4)
 
 
@@ -223,6 +227,7 @@ Sim4,
 l = c(20))
 print(ex5)
 plot(ex5)
+plot(ex5, type = "original-bias")
 summary(ex5)
 
 
@@ -233,6 +238,7 @@ Sim4,
 l = c(5,30))
 print(ex6)
 plot(ex6)
+plot(ex6, type = "original-bias")
 summary(ex6)
 
 }
