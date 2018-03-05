@@ -174,7 +174,7 @@ setMethod(f="GarmaSim",
                 stop("X must have 'nsteps'+'burnin'+'max. order' rows")
             }
 
-            B0 <- if(is.null(names(obj@spec@beta.x))|is.null(
+            B0 <- if(is.null(names(obj@spec@beta.x))||is.null(
               colnames(obj@spec@X)))
               obj@spec@X%*%obj@spec@beta.x
             else {

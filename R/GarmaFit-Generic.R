@@ -210,17 +210,17 @@ setMethod(f="GarmaFit",
                                      integer(0))) NULL else x@garma@spec@theta
                 par4 <- if(identical(grep("sigma", rownames(x@print.out)),
                                      integer(0))) NULL else sqrt(x@garma@spec@sigma2)
-                pars <- c(par1,par2,par3,par4)
+                pars <- c(par1,par2,par4,par3)
                 return(pars)
               }
 
               db <- prep.db(obj@print.out)
-
+              db$parameters <- factor(as.character(db$parameters))
               db2 <- data.frame(parameters = levels(db$parameters),
                                 variable = factor("true.value"),
                                 value = create.parameters(obj))
               db2 <- create.labels(db2)
-
+              
               list(db = db, db2=db2)
 
             }
@@ -305,7 +305,7 @@ setMethod(f="plot",
 
             db <- x@plot.out[['db']]
             db2 <- x@plot.out[['db2']]
-
+            
             if((x@garma@nmonte > 1))
             {
               names(db2)[1] <- "true.value"
