@@ -196,9 +196,9 @@ setMethod(f="GarmaSim",
             out <- foreach(n=seq_len(obj@nmonte))%op% { #obj@nmonte
 
               y0 <- switch(obj@spec@family
-                           ,"PO" = { rpois(length(obj@spec@mu0),length(obj@spec@mu0))}
+                           ,"PO" = { rpois(length(obj@spec@mu0),obj@spec@mu0)}
                            ,"GA" = {rgamma(length(obj@spec@mu0),shape=1/obj@spec@sigma2,
-                                           rate=1/(obj@spec@sigma2*length(obj@spec@mu0)))}
+                                           rate=1/(obj@spec@sigma2*obj@spec@mu0))}
               )
 
               db0 <- if(all(obj@order == c(0,0))) data.frame() else
