@@ -22,7 +22,7 @@ setClass("PoissonSpec",
          slots = list(alpha = "numeric",
                       mu0 = "numeric"),
          prototype = list(family = "PO", alpha = 0.1,
-                          mu0 = 1, y0 = 1),
+                          mu0 = 10, y0 = 1),
          validity = function(object) {
            if(object@family != "PO")
              return("The PoissonSpec class is only valid
