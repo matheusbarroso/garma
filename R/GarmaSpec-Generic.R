@@ -44,19 +44,19 @@ setGeneric("GarmaSpec", function(family, ...) {
 #'
 #'@examples #PoissonSpec 
 #'GarmaSpec("PO",phi=c(1,1),mu0=c(1,1))
-#'GarmaSpec("PO",beta.x = 1:4)
-#'GarmaSpec("PO",beta.x = 1:4, phi = 4)
+
 #'#GammaSpec
 #'
 #'GarmaSpec("GA",phi=c(1,1),mu0=c(1,1))
-#'GarmaSpec("GA",beta.x = 1:4)
-#'GarmaSpec("GA",beta.x = 1:4, phi = 4)
+
 
 
 setMethod(f="GarmaSpec",
 
           definition = function(family, ...) {
-
+          if(!family %in% c("PO","GA"))
+            stop("Invalid value of family, accepted values 
+                 are: 'PO' and 'GA'")
             switch(family,"PO" = {
               new("PoissonSpec",family = family, ...)
 
