@@ -9,8 +9,6 @@ NULL
 #'
 #'@author Matheus de Vasconcellos Barroso
 #'
-#'@slot family A character with the tag "GA".
-#'
 #'@slot sigma2 Numeric, specifying the \bold{sigma2} parameter.
 #'
 #'@slot mu0 A numeric vector with length equal to the \bold{max.order}
@@ -22,12 +20,8 @@ setClass("GammaSpec",
          slots = list(sigma2 =  "numeric",
                       mu0 = "numeric"),
          prototype = list(family = "GA", sigma2 = 1,
-                          mu0 = 10, y0 = 1),
+                          mu0 = 10),
          validity = function(object) {
-           if(object@family != "GA")
-             return("The PoissonSpec class is only valid
-                    for family = 'GA'.")
-
            if(object@sigma2 < 0)
              return("The offset term must be positive.")
 

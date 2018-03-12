@@ -9,8 +9,6 @@ NULL
 #'
 #'@author Matheus de Vasconcellos Barroso
 #'
-#'@slot family A character with the tag "PO".
-#'
 #'@slot alpha Numeric, specifying the \bold{offset} parameter.
 #'
 #'@slot mu0 A numeric vector with length equal to the \bold{max.order}
@@ -21,13 +19,9 @@ NULL
 setClass("PoissonSpec",
          slots = list(alpha = "numeric",
                       mu0 = "numeric"),
-         prototype = list(family = "PO", alpha = 0.1,
-                          mu0 = 10, y0 = 1),
+         prototype = list(alpha = 0.1,
+                          mu0 = 10),
          validity = function(object) {
-           if(object@family != "PO")
-             return("The PoissonSpec class is only valid
-			for family = 'PO'.")
-
            if(object@alpha < 0)
              return("The offset term must be positive.")
 
