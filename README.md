@@ -12,7 +12,7 @@ Inside **R** console just enter these two line commands:
 **install_github**("matheusbarroso/garma") 
 
 
-Check function's help for examples...
+Check function's help for examples or the vignette: https://github.com/matheusbarroso/garma/blob/master/inst/doc/garma_vignette.pdf 
 
 References: 
 
