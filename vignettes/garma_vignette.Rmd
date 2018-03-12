@@ -1,0 +1,522 @@
+---
+title: "Introduction to the garma Package"
+author: "Matheus de Vasconcellos Barroso"
+date: '`r Sys.Date()`'
+output:
+  md_document:
+    variant: markdown_github
+  html_document:
+    toc: yes
+    toc_depth: 2
+  pdf_document:
+    toc: yes
+    toc_depth: '2'
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+#Introduction
+
+This is an introduction to the _garma_ package. The package is designed to simulate, estimate and generate Moving Block Bootstrap resamples and diagnosis for the _GARMA_ process of Benjamin et al. (2003). It has four core _classes_ and respective _methods_, all related to the evaluation of simulated _GARMA_ process. The S4 classes are: `GarmaSpec`, `GarmaSim`, `GarmaFit` and `GarmaSimBoot`. The syntax is straightforward, in the firt class 'Spec' stands for __Specification__ of a _GARMA_ process, while 'Sim' for _Simulation_ of the specified model in the second, 'Fit' for __estimating__ in the third, and 'SimBoot' for a Moving Block Bootstrap evaluation of the simulated process. All classes have the built-in methods `print`, `summary` and `plot`, and their behaviour depends on some factors as the number of Monte Carlo simulations being specified.
+<br>
+##How to install the package:
+The __garma__ package depends on the __dboot__ package. So the first step in the installation process is to certify that you have the package __devtools__ installed:
+
+```{r, warning=FALSE,message=FALSE,results='hide'}
+if (!require("devtools")) install.packages("devtools")
+```
+Now the __dboot__ and __garma__ pkgs:
+
+```{r,warning=FALSE,message=FALSE,results='hide'}
+if (!require("dboot")) install_github("matheusbarroso/dboot")
+if (!require("garma")) 
+install_github("matheusbarroso/garma")
+```
+
+
+The next section gives a formal defintion of the forementioned process followed by a section for the classes and method explaining their usage and providing examples.
+
+#The _GARMA_ model
+
+  Let $Y$ be a stochastic process, i.e. a collection of random variables $Y={Y_t(\omega),t \in \mathcal{T}, \omega \in \Omega }$, defined in the filtered probability space $(\Omega, \mathcal{F}, {\mathcal{F}_{t \geq0 }},\mathcal{P} )$, where $\Omega$ is the set of all possible states, $\mathcal{F}$ is the $\sigma-field$ of all subsets of $\Omega$, ${\mathcal{F}_{t \geq0 }}$ is a filtration, $\mathcal{P}$ is a probability measure unter $\mathcal{F}$ and $\mathcal{T}$ an arbitrary set. In the garma model we have that each realization of $Y_t, t=1,...n$, has conditional distribution belonging to the exponential family of distributions, where the conditioning is w.r.t. to $\mathcal{F}_{t-1}$. $\mathcal{F}_{t-1}=\{ \mathbf{x_1,\dots,x_{t-1}};y_1,\dots,y_{t-1};\mu_1,\dots,\mu_{t-1} \}$ such that the conditional density $f_{Y_t|\mathcal{F}_{t-1}}$ is of the form: 
+
+\begin{equation}
+\label{condgarma}
+f_{Y_t|\mathcal{F}_{t-1}}=exp\left( \frac{y_t v_t - a(v_t)}{\varphi} + b(y_t,\varphi)  \right ) 
+\end{equation}
+
+where $a(\cdot)$ and $b(\cdot)$ are specific functions definining the particular member of the exponential familiy, with $v_t$ as the canonical and $\varphi$ as the scale parameter of the member, $\mathbf{x}$ is a $r$ dimensional vector of explanatory variables and $\mu$ is the mean vector. Additionaly, the predictor $\eta$ is such that $\eta=g(\mu_t)$ where $g$ is the link function. 
+
+
+\begin{equation}
+\label{linpred}
+\eta_t = \mathbf{x'_t} \boldsymbol{\beta} + \sum_{j=1}^{p}\phi_j\{g(y_{t-j})-\mathbf{x'_{t-j}} \boldsymbol{\beta} \}
++ \sum_{j=1}^{q}\theta_j{g(y_{t-j})-\eta_{t-j}}
+\end{equation}
+
+where $\boldsymbol{\beta}' = (\beta_1,\beta_2,\dots,\beta_r)$ is the vector of parameters of the linear predictor, $\boldsymbol{\phi}'=(\phi_1,\phi_2,\dots,\phi_p)$ the vector of autoregressive parameters and 
+$\boldsymbol{\theta}'=(\theta_1,\theta_2,\dots,\theta_p)$ the vector of moving average parameters. Eq.\ref{condgarma} and Eq.\ref{linpred} define the _GARMA_ model.  
+In this package only the conditional _Gamma_ and _Poisson_ were implemented, though the application to all the exponential family is already in the pipeline. Thus, the next two subections deal with the specifics of the aforementioned models.
+
+
+## _Poisson-GARMA_ model
+
+If $Y_t|F_{t-1}$ follows a Poisson distribution with mean parameter $\mu_t$ then its p.m.f. is:
+
+\begin{equation}
+\label{condpoisson}
+f_{Y_t|\mathcal{F}_{t-1}}=\frac{\mathcal{e^{-\mu_t} \mu_t^{y_t}}}{y_t!} =exp\left(y_t log(\mu_t)-\mu_t
+- log(y_t!)\right )
+\end{equation}
+
+Consequently, we have that $y_t|\mathcal{F}_{t-1}$ belongs to the exponential distribution, $v_t=log(\mu_t)$, $a(v_t)=\mathcal{e^{-\mu_t}}$, $b(y_t,\varphi)=-log(y_t!)$ and $\varphi=1$. The canonical _link function_ is $log\equiv{ln}$. Hence $\eta_t$ is such that:
+
+\begin{equation}
+\label{linpoisson}
+\eta_t = log(\mu_t)= \mathbf{x'_t} \boldsymbol{\beta} + \sum_{j=1}^{p}\phi_j\{log(y^{*}_{t-j})-\mathbf{x'_{t-j}} \boldsymbol{\beta} \}
++ \sum_{j=1}^{q}\theta_j{g(y_{t-j})-\eta_{t-j}}
+\end{equation}
+where $y^{*}_{t-j}= max(y_{t-j},\alpha), 0 <\alpha<1$. $\alpha$ is the offset parameter and its default value in the package is 0.1
+
+## _Gamma-GARMA_ model
+
+If $Y_t|F_{t-1}$ follows a Gamma distribution with shape parameter $\delta$ and scale parameter $\gamma$ (so a $\Gamma(\delta,\gamma)$ distribution) its p.d.f is given by:
+
+\begin{equation}
+\label{gammapdf}
+f_{Y_t|\mathcal{F}_{t-1}}=\frac{\mathcal{y^{\delta-1}_t \mathcal{e}^{-y_t/\delta}}}{\Gamma(\delta)\gamma^\delta}
+\end{equation}
+with $E_{Y_t|\mathcal{F}_{t-1}}=\delta\gamma$ and 
+$Var_{Y_t|\mathcal{F}_{t-1}}=\delta\gamma^2$. Howoever, here we adopt a more useful parametrization of the gamma density given by this suitable transformation: $delta=1/\sigma^2$ and $\gamma=\sigma^2\mu_t$. With these new parameters at hand we have that $E_{Y_t|\mathcal{F}_{t-1}}=\mu_t$  and $Var_{Y_t|\mathcal{F}_{t-1}}=\sigma^2\mu^2_t$. In the _Gamma_ case the canonical _link function_ is the reciprocal function, though, we make usage of the _logarithmic_ function. A new version of the package with all reasonable link functions will be developed but keep in mind that the $log$ is currently being used in the _Gamma_ case so that the equation for $\eta_t$ is the same for the _Poisson_ case, that is, Eq. \ref{linpoisson}. 
+
+
+
+#The garma package
+
+After a formal definition of the _GARMA_ model now we are able to understand better each class and its respective methods in the __garma__ package. This section contains four subsections, one for each main class in the package.
+
+##GarmaSpec
+
+The GarmaSpec class is the more general class for specificating the _GARMA_ model and contain the slots that are common to all members of the exponential family. For those unfamiliar with S4 classes, slots might be seen as the parameters that specify the class, and are defined as follows:
+* `family`: 
+A character vector specifying the family of the specification object. Accepted values are: "Po" for poisson and "GA"for gamma families.
+
+* `beta.x`:A numeric vector with length of the desired specification, in the current version the intercept term must be includer here. The default behaviour  is `beta.x = 1L`.
+
+* `phi`: A numeric vector with length of the desired autoregressive term order specification.The default behaviour  is `phi = 0L`.
+
+* `theta`: A numeric vector with length of the desired moving-average term order specification. The default behaviour  is `theta = 0L`.
+
+*  `X`: A $n \times m$ matrix, where `n = nsteps + burnin + max.order` and `m = length(beta.x)`. Where __nsteps__ is the number of simulations desired, __burnin__ the number of burnin observations and __max.order__ is equal to the highest order of the GARMA model (i.e. `max(length(phi),length(theta)`.)
+
+This class has two  child classes: `PoissonSpec` and `GammaSpec`. Each one specifies the additional slots required for a correc specification of a _Poisson_ or _Gamma_ _GARMA_ models.
+
+###PoissonSpec
+ Inherits from `GarmaSpec` and has the slots:
+ 
+ * `family`: A character with the tag "PO".
+ * `alpha`: Numeric, specifying the __offset__ ($\alpha$) parameter. The default value is $\alpha=0.01$
+ * `mu0`: A numeric vector with length equal to the __max.order__ of the Poisson-GARMA model. The default value is $\mu_0=10$.
+
+###GammaSpec
+ Inherits from `GarmaSpec` and has the slots:
+ 
+ * `family`: A character with the tag "PO".
+ * `sigma2`: Numeric, specifying the $\sigma^2$ parameter.
+ * `mu0`: A numeric vector with length equal to the __max.order__ of the Poisson-GARMA model. The default value is $\mu_0=10$.
+
+###Methods
+To avoid problems in the model specification the easiest way to create an object of the GarmaSpec(Gamma/Poisson) is through the construtor function (method) `GarmaSpec`. At least the `family` argument must be provided in order to create an object of this class. If no further arguments are passed the default behaviour is used:
+
+
+```{r, warnings=FALSE,message=FALSE, warning = FALSE, cache = TRUE}
+library(garma)
+GarmaSpec("PO") # This results in no ARMA terms.
+GarmaSpec("GA") # This results in no ARMA terms.
+
+```
+
+
+If we wish to specify a second order poisson model we would need at least:
+
+```{r}
+GarmaSpec("PO",phi=c(0.3,0.2),mu0=c(1,1))
+```
+
+
+Now we are ready to move to some more elaborate examples:
+
+
+1. A GA-GARMA(1,0) with an intercept term, note that the  length of x1 is 101, as we will simulate 100 steps, and the other 1 is for the initial value of Phi. The initial value for $\mu_0$ is the default.
+
+```{r, cache = TRUE}
+spec1 <- GarmaSpec("GA",
+phi = 0.5,
+beta.x = 1,
+sigma2 =2,
+X = as.matrix(
+ data.frame(
+   x1 = rep(10,101))))
+```
+     
+<br>
+
+2. A PO-GARMA(1,3) with an intercept term, here the default behaviour of $\mu_0$ will not suffice, so we need three initial values. The intercept will be generated automatically
+```{r}
+spec2 <- GarmaSpec("PO",
+phi = 0.2,
+theta = c(0.1, 0.3, 0.5),
+mu0 = 1:3)
+```
+     
+<br>
+  
+3. A PO-GARMA(2,0) with an intercept term and one   covariate. A series of length 100 will be generated, though, 1000 burnin observations will be deleted and the covariates must take into consideration these obs and the order of the process, so that the nrow of X should be 100 (desired length)+1000 (burnin)+2 (order of the process)
+```{r}
+spec3 <- GarmaSpec("PO",
+phi = c(0.5,0.15),
+beta.x = c(1,1),
+mu0 =  c(2,2),
+X = as.matrix(
+ data.frame(
+ intercept = rep(1,1102),
+   x1 = c(rep(7,100),
+       rep(2,1002)))))
+```
+    
+<br>
+ 
+4.  A PO-GARMA(0,0), with an intercept and covariate:
+```{r}
+spec4 <- GarmaSpec("PO",
+beta.x = c(0.1,1),
+X = as.matrix(
+ data.frame(
+ intercept = rep(1,1100),
+   x1 = c(rep(7,100),
+       rep(2,1000)))))
+```
+    
+<br>
+
+##GarmaSim
+The `GarmaSim` class is used to simulate an object of the class `GarmaSpec`. The methods `GarmaSim`, `print`, `plot` and `summary` are implemented. The `GarmaSim` parameters are:
+
+* `spec`: An object of the GarmaSpec class, as provided by the method `GarmaSpec`
+
+* `nmonte`: A positive integer, specifying the number of Monte Carlo simulations to perform, the default value is __1000__.
+
+* `nsteps`: A numeric vector with the number of steps in the Garma model simulation, that is, the length of the time series to simulate. The default value is __100__.
+
+* `burnin`: A numeric vector indicating the number of burn in observations. If you want to generate only `nsteps` this argument should be set equal to zero. Otherwise, provide a positive integer. The default value is __1000__.
+
+* `allow.parallel`: Logical `TRUE/FALSE` indicating whether parallel computation via the _foreach_ package should be used. The default value is `TRUE`. OBS:paralllel backend must be registered prior to calling GarmaSim.
+
+* `seed`: Numeric, the seed to `set.seed()` for replicable examples. Default value is _123_.
+<br>
+Before moving to the examples it is useful to register the parallel back end:
+```{r, cache = TRUE}
+library(doParallel)
+no_cores <- detectCores() - 1
+registerDoParallel(no_cores)
+
+```
+
+Now we can move to some examples:
+1. Using the specifications build in the session Garma Spec:
+```{r, cache = TRUE}
+sim1 <- GarmaSim(spec1,
+                 nmonte = 10, #10 monte carlo simulations
+                 burnin = 0) # no burnin
+```
+The print method give us a tidy output in the monte carlo setting, with a brief descritpion of the model and each generated series in the columns.
+```{r, results = 'hide'}
+print(sim1)
+```
+
+When `nmonte` > 1, the plot comes with th 95% empirical confidence interval for the mean of each observation. The confidence level can be changed through the `confInt` parameter:
+
+
+```{r, warning = FALSE}
+plot(sim1)
+plot(sim1, 
+        confInt = .80)
+```
+The summary(`GarmaSim`) method has a different behaviour for `nmonte > 1` and `nmonte = 1`
+```{r}
+summary(sim1)
+```
+<br>
+2. An __Poisson-GARMA(0,0)__, with only one Monte Carlo simulation:
+
+```{r, cache = TRUE}
+sim2 <- 
+  GarmaSim(
+    GarmaSpec("PO",
+              beta.x = c(0.1,1),
+              X = as.matrix(
+              data.frame(
+                intercept = rep(10,1100),
+                x1 = c(rep(7,100),rep(2,1000))))),
+  nmonte = 1, 
+  allow.parallel = TRUE) 
+print(sim2)
+plot(sim2)
+summary(sim2)
+```
+Further specification examples can be found at the `GarmaSim-class` help menu.
+
+##GarmaFit
+Given a `GarmaSim` object we can simultaneously estimate all the `nmonte` series (if `parallel = TRUE` and the parallel back-end registered). The methods `GarmaFit`, `print`, `plot` and `summary` are implemented. The `GarmaSim` method has the following parameters:
+
+* `garma`: An object of the __GarmaSim__ class, as provided by `GarmaSim`.
+
+* `allow.parallel`: Logical `TRUE/FALSE` indicating whether parallel computation via the foreach package should be used. The default value is `TRUE`. OBS:paralllel backend must be registered prior to calling GarmaSim.
+
+* `seed`: Numeric, the seed to `set.seed()` for replicable examples. Default value is 123.
+
+* `errorhandling`: Character, either 'try' or 'pass'
+
+* `n.try`: Positive integer. If `errorhandling = 'try'`, this specifies the number of attempts in the algorithm.
+
+* `control`: List. This is passed to the garmaFit2 function. The options are given by `garmaFit` function in the __gamlss.util__ package.
+
+The examples:
+1.
+
+```{r}
+fit1 <- GarmaFit(sim1)
+print(fit1)
+plot(fit1)
+summary(fit1)
+```
+<br>
+2. An example with `nmonte =  1`:
+```{r}
+sim2 <-  GarmaSim(
+  GarmaSpec("GA",
+            phi = 0.5,
+            beta.x = 1,
+            sigma2 =2,
+            X = as.matrix(
+              data.frame(
+                x1 = rep(10,101)))),
+  nmonte = 1,
+  burnin = 0)
+fit2 <- GarmaFit(sim2)
+print(fit2)
+plot(fit2)
+summary(fit2)
+```
+<br>
+
+##GarmaSimBoot
+
+Given a `GarmaSim` object we can simultaneously perform the Moving Block Bootstrap for all the `nmonte` series (if `parallel = TRUE` and the parallel back-end registered). The methods `GarmaSimBoot`, `print`, `plot` and `summary` are implemented. The `GarmaSimBoot` method has the following parameters:
+
+
+* `sim`: An object of the __GarmaSim__ class, as provided by `GarmaSim`.
+
+* `l`: `l` is the fixed block length used in generating the replicate time series.
+
+* `R`: A positive integer giving the number of bootstrap replicates required.
+
+* `allow.parallel`: Logical `TRUE/FALSE` indicating whether parallel computation via the foreach package should be used. The default value is `TRUE`. OBS:paralllel backend must be registered prior to calling GarmaSim.
+
+* `seed`: Numeric, the seed to `set.seed()` for replicable examples. Default value is 123.
+
+* `errorhandling`: Character, either 'try' or 'pass'
+
+* `n.try`: Positive integer. If `errorhandling = 'try'`, this specifies the number of attempts in the algorithm.
+
+* `boot.function`: A function to summarise the bootstrap replicates. The default function returns 0. Be aware that this is not a problem, as by default the mean values is already being returned. This is useful if the user wants to specify a quantity not being reported, as an example consider the 0.2 quantile. _Warning_: this feature is only enabled if `nmonte > 1`.
+
+* `control`: List. This is passed to the garmaFit2 function. The options are given by `garmaFit` function in the __gamlss.util__ package.
+
+The examples:
+
+1.`nmonte = 1` and only one  block length for the MBB:
+
+
+```{r, cache = TRUE, warning = FALSE}
+# specification and simulation:
+Sim1 <- GarmaSim(
+  GarmaSpec("GA",
+            phi = 0.5,
+            beta.x = 1,
+            sigma2 =2,
+            X = as.matrix(
+              data.frame(
+                x1 = rep(10,101)))), 
+  nmonte = 1, 
+  burnin = 0)
+#MBB
+
+mbb1 <- GarmaSimBoot(Sim1,l = 20)
+#print(mbb1)
+plot(mbb1)
+summary(mbb1)
+
+```
+<br>
+2. `nmonte = 10`, multiple block lengths 
+
+```{r, warning = FALSE, message = FALSE}
+mbb2 <- GarmaSimBoot(Sim1,
+                     l = c(4,7,10))
+
+#print(mbb2)
+plot(mbb2)
+summary(mbb2)
+
+```
+
+<br>
+3. `nmonte = 10`, multiple block lengths + a user defined function to apply in the bootstrap resamples (the 0.1 and 0.9 quantiles)
+
+```{r}
+Sim2 <-  GarmaSim(
+  GarmaSpec("GA",
+            phi = 0.5,
+            beta.x = 1,
+            sigma2 =2,
+            X = as.matrix(
+              data.frame(
+                x1 = rep(10,101)))), 
+  nmonte = 10, 
+  burnin = 0)
+
+```
+
+```{r, results = "hide", warning = FALSE, message = FALSE}
+mbb3 <- GarmaSimBoot(Sim2, 
+                     l = c(10,15),
+                     boot.function = 
+                       function(x) 
+                         quantile(x, 
+                                  probs = c(0.1,0.9)))
+```
+
+```{r}
+#print(mbb3)
+plot(mbb3)
+plot(mbb3, variable = "Median.")
+plot(mbb3, variable = "boot.func.10%")
+#plot(mbb3, variable = "test") # if you type a variable that #does not exists you can see all available options... 
+plot(mbb3, type = "original-bias", scales = 'free')
+summary(mbb3)
+```
+<br>
+#Estimation of a general Garma model 
+This section deals with the estimation of any garma model, making usage of the `garmaFit2` function from the __dboot__ package (an adapted version of the `garmaFit` function from  the __gamlss.util__ pkg). This is a general purpose function, handling families other than the ones in the exponential family, for details check the __gamlss.util__ package. The `GarmaFit` method is only a constructor from a `GarmaSim` object to the `garmaFit` function.
+<br>
+The minimal structure for estimating a __GARMA__ process is (as defined in the `garmaFit` function):
+
+* `formula`: A formula for linear terms i.e. like in `lm()`
+ 
+
+* `order`: the relevant `data.frame`. 
+
+* `data`: Numeric, the seed to `set.seed()` for replicable examples. Default value is 123.
+
+So we can construc an example with the `GarmaSim` function or use the analogy into a real data example:
+
+```{r,}
+spec <- GarmaSpec("PO",
+                  phi = c(0.5,0.15), 
+                  beta.x = c(1,1),
+                  mu0 =  c(2,2), 
+                  X = as.matrix(
+                    data.frame(
+                      intercept = rep(1,1102),
+                      x1 = c(rep(7,100),
+                             rep(2,1002)))))
+
+sim <- GarmaSim(spec,
+                nmonte = 1,
+                nsteps = 100)
+
+#creating the required data.frame
+db <- data.frame(cbind(yt = print(sim), intercept = rep(1,100)))
+set.seed(123)
+fit <- garmaFit2(yt~.-1 ,data= db,order = sim@order )
+library(gamlss.util)
+summary(fit)
+
+#the same task using the built-in intercept:
+db <- data.frame(yt = print(sim))
+set.seed(123)
+fit <- garmaFit2(yt~. ,data= db,order = sim@order )
+summary(fit)
+```
+
+
+<br>
+#MBB of a general Garma model 
+In this section we deal with the MBB estimation of a _GARMA_ process using the `tsboot2` function from the __dboot__ package. This is only a modified version of the `tboot` function from the __boot__ package, with similar arguments. 
+
+```{r}
+spec <- GarmaSpec("PO",
+                  phi = c(0.5,0.15), 
+                  beta.x = c(1,1),
+                  mu0 =  c(2,2), 
+                  X = as.matrix(
+                    data.frame(
+                      intercept = rep(1,1102),
+                      x1 = c(rep(7,100),
+                             rep(2,1002)))))
+
+sim <- GarmaSim(spec,
+                nmonte = 1,
+                nsteps = 100)
+
+#db <- data.frame(yt = print(sim))
+db <- data.frame(cbind(yt = print(sim), intercept = rep(1,100)))
+set.seed(123)
+
+boot.function <- function(data, order, family) {
+ fit <- garmaFit2(yt~.-1,data = data ,order = order,
+                  family = family)
+ return(fit$coef)
+}
+ord <- sim@order ; fam <- sim@spec@family
+
+  
+MBB <- tsboot2(db, 
+               statistic = boot.function, 
+               R = 10,
+               l = 5, 
+               order = ord, 
+               family = fam,
+               export = "garmaFit2",
+               package = "gamlss")
+
+#The original statistic (applied to the original series ):
+MBB$t0
+
+#The resamples:
+MBB$t
+
+#Quick statistic for the resamples:
+apply(MBB$t,2, mean)
+
+```
+Here we only dealt with the _Poisson-GARMA_ model, for all available families: 
+
+```{r, results = "hide"}
+library(gamlss.dist)
+?gamlss.family
+
+```
+
+
+
+#References
+Benjamin, Michael A., Rigby, Robert A. and Stasinopoulos, D. Mikis. 2003. Generalized Autoregressive Moving Average Models. Journal of the American Statistical Association. Mar, 2003, Vol. 98, 461, pp. 214-223. 
+
+
