@@ -14,8 +14,6 @@ speficication object.
 \section{Slots}{
 
 \describe{
-\item{\code{family}}{A character with the tag "GA".}
-
 \item{\code{sigma2}}{Numeric, specifying the \bold{sigma2} parameter.}
 
 \item{\code{mu0}}{A numeric vector with length equal to the \bold{max.order}
