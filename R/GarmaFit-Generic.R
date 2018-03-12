@@ -71,8 +71,9 @@ setGeneric("GarmaFit", function(garma, ...) {
 #'
 #'Sim4 <- GarmaSim(
 #'GarmaSpec("PO",
-#'phi = c(0.5,0.15)
+#'phi = c(0.5,0.15),
 #'beta.x = c(1,1),
+#'mu0 =  c(2,2),
 #'X = as.matrix(
 #'  data.frame(
 #'  intercept = rep(1,1102),
@@ -92,27 +93,27 @@ setGeneric("GarmaFit", function(garma, ...) {
 #'
 #' ##Example of the GarmaFit methods:
 #' 
-#' ex1 <- GarmaFit(Sim1,errorhandling="try"))
+#' fit.ex1 <- GarmaFit(Sim1,errorhandling="try"))
 #'print(fit.ex1)
 #'plot(fit.ex1)
 #'summary(fit.ex1)
 #'
-#' ex2 <- GarmaFit(Sim2)
+#' fit.ex2 <- GarmaFit(Sim2)
 #'print(fit.ex2)
 #'plot(fit.ex2)
 #'summary(fit.ex2)
 #'
-#' ex3 <- GarmaFit(Sim3)
+#' fit.ex3 <- GarmaFit(Sim3)
 #'print(fit.ex3)
 #'plot(fit.ex3)
 #'summary(fit.ex3)
 #'
-#' ex4 <- GarmaFit(Sim4)
+#' fit.ex4 <- GarmaFit(Sim4)
 #'print(fit.ex4)
 #'plot(fit.ex4)
 #'summary(fit.ex4)
 #'
-#' ex5 <- GarmaFit(Sim5)
+#' fit.ex5 <- GarmaFit(Sim5)
 #'print(fit.ex5)
 #'plot(fit.ex5)
 #'summary(fit.ex5)
