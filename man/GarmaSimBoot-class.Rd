@@ -42,6 +42,12 @@ computed and only the default value of
 'original' is accepted. Any other option for \code{variable}
 is overwritten.}
 
+\item{type}{A string with the value 'default' 
+or 'original-bias' designating the type of the plot. The 
+'default' plot is the original statistic, while the 
+'original-bias' contrast the original with the bias-corrected
+ estimates.}
+
 \item{x}{An object of the GarmaSimBoot class, as provided
 by \code{\link{GarmaSimBoot}}.}
 }

@@ -508,6 +508,11 @@ setMethod(f="summary",
 #' 'original' is accepted. Any other option for \code{variable}
 #' is overwritten. 
 #' 
+#' @param type A string with the value 'default' 
+#' or 'original-bias' designating the type of the plot. The 
+#' 'default' plot is the original statistic, while the 
+#' 'original-bias' contrast the original with the bias-corrected
+#'  estimates.
 
 setMethod(f="plot",
           signature = "GarmaSimBoot",
