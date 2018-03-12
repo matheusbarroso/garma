@@ -3,12 +3,13 @@ title: "Introduction to the garma Package"
 author: "Matheus de Vasconcellos Barroso"
 date: '`r Sys.Date()`'
 output:
-  md_document:
-    variant: markdown_github
   html_document:
     toc: yes
     toc_depth: 2
+  md_document:
+    variant: markdown_github
   pdf_document:
+    keep_tex: yes
     toc: yes
     toc_depth: '2'
 ---
@@ -59,6 +60,8 @@ where $a(\cdot)$ and $b(\cdot)$ are specific functions definining the particular
 + \sum_{j=1}^{q}\theta_j{g(y_{t-j})-\eta_{t-j}}
 \end{equation}
 
+
+
 where $\boldsymbol{\beta}' = (\beta_1,\beta_2,\dots,\beta_r)$ is the vector of parameters of the linear predictor, $\boldsymbol{\phi}'=(\phi_1,\phi_2,\dots,\phi_p)$ the vector of autoregressive parameters and 
 $\boldsymbol{\theta}'=(\theta_1,\theta_2,\dots,\theta_p)$ the vector of moving average parameters. Eq.\ref{condgarma} and Eq.\ref{linpred} define the _GARMA_ model.  
 In this package only the conditional _Gamma_ and _Poisson_ were implemented, though the application to all the exponential family is already in the pipeline. Thus, the next two subections deal with the specifics of the aforementioned models.
@@ -70,11 +73,13 @@ If $Y_t|F_{t-1}$ follows a Poisson distribution with mean parameter $\mu_t$ then
 
 \begin{equation}
 \label{condpoisson}
-f_{Y_t|\mathcal{F}_{t-1}}=\frac{\mathcal{e^{-\mu_t} \mu_t^{y_t}}}{y_t!} =exp\left(y_t log(\mu_t)-\mu_t
+f_{Y_t|\mathcal{F}_{t-1}}=\frac{e^{-\mu_t} \mu_t^{y_t}}{y_t!} =exp\left(y_t log(\mu_t)-\mu_t
 - log(y_t!)\right )
 \end{equation}
 
-Consequently, we have that $y_t|\mathcal{F}_{t-1}$ belongs to the exponential distribution, $v_t=log(\mu_t)$, $a(v_t)=\mathcal{e^{-\mu_t}}$, $b(y_t,\varphi)=-log(y_t!)$ and $\varphi=1$. The canonical _link function_ is $log\equiv{ln}$. Hence $\eta_t$ is such that:
+
+
+Consequently, we have that $y_t|\mathcal{F}_{t-1}$ belongs to the exponential distribution, $v_t=log(\mu_t)$, $a(v_t)=e^{-\mu_t}$, $b(y_t,\varphi)=-log(y_t!)$ and $\varphi=1$. The canonical _link function_ is $log\equiv{ln}$. Hence $\eta_t$ is such that:
 
 \begin{equation}
 \label{linpoisson}
@@ -89,8 +94,10 @@ If $Y_t|F_{t-1}$ follows a Gamma distribution with shape parameter $\delta$ and 
 
 \begin{equation}
 \label{gammapdf}
-f_{Y_t|\mathcal{F}_{t-1}}=\frac{\mathcal{y^{\delta-1}_t \mathcal{e}^{-y_t/\delta}}}{\Gamma(\delta)\gamma^\delta}
+f_{Y_t|\mathcal{F}_{t-1}}=\frac{y^{\delta-1}_t e^{-y_t/\delta}}{\Gamma(\delta)\gamma^\delta}
 \end{equation}
+
+
 with $E_{Y_t|\mathcal{F}_{t-1}}=\delta\gamma$ and 
 $Var_{Y_t|\mathcal{F}_{t-1}}=\delta\gamma^2$. Howoever, here we adopt a more useful parametrization of the gamma density given by this suitable transformation: $delta=1/\sigma^2$ and $\gamma=\sigma^2\mu_t$. With these new parameters at hand we have that $E_{Y_t|\mathcal{F}_{t-1}}=\mu_t$  and $Var_{Y_t|\mathcal{F}_{t-1}}=\sigma^2\mu^2_t$. In the _Gamma_ case the canonical _link function_ is the reciprocal function, though, we make usage of the _logarithmic_ function. A new version of the package with all reasonable link functions will be developed but keep in mind that the $log$ is currently being used in the _Gamma_ case so that the equation for $\eta_t$ is the same for the _Poisson_ case, that is, Eq. \ref{linpoisson}. 
 
@@ -508,7 +515,7 @@ apply(MBB$t,2, mean)
 ```
 Here we only dealt with the _Poisson-GARMA_ model, for all available families: 
 
-```{r, results = "hide"}
+```{r, eval = FALSE}
 library(gamlss.dist)
 ?gamlss.family
 
