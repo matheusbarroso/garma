@@ -11,7 +11,7 @@
 
 <meta name="author" content="Matheus de Vasconcellos Barroso" />
 
-<meta name="date" content="2018-03-12" />
+<meta name="date" content="2018-03-15" />
 
 <title>Introduction to the garma Package</title>
 
@@ -121,7 +121,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Introduction to the garma Package</h1>
 <h4 class="author"><em>Matheus de Vasconcellos Barroso</em></h4>
-<h4 class="date"><em>2018-03-12</em></h4>
+<h4 class="date"><em>2018-03-15</em></h4>
 
 </div>
 
@@ -138,6 +138,7 @@ $(document).ready(function () {
 <li><a href="#garmafit">GarmaFit</a></li>
 <li><a href="#garmasimboot">GarmaSimBoot</a></li>
 </ul></li>
+<li><a href="#mbb-of-a-general-garma-model">MBB of a general Garma model</a></li>
 <li><a href="#references">References</a></li>
 </ul>
 </div>
@@ -848,9 +849,7 @@ fit &lt;- garmaFit2(yt~.-1 ,data= db,order = sim@order )
 #&gt; deviance of linear model=  637.7676 
 #&gt; deviance of  garma model=  571.322
 library(gamlss.util)
-#&gt; Warning: package 'gamlss.util' was built under R version 3.4.1
 #&gt; Loading required package: zoo
-#&gt; Warning: package 'zoo' was built under R version 3.4.3
 #&gt; 
 #&gt; Attaching package: 'zoo'
 #&gt; The following objects are masked from 'package:base':
@@ -920,7 +919,12 @@ summary(fit)
 #&gt; Global Deviance:     571.322 
 #&gt;             AIC:     579.322 
 #&gt;             SBC:     589.743</code></pre>
-<p><br> #MBB of a general Garma model In this section we deal with the MBB estimation of a <em>GARMA</em> process using the <code>tsboot2</code> function from the <strong>dboot</strong> package. This is only a modified version of the <code>tboot</code> function from the <strong>boot</strong> package, with similar arguments.</p>
+<p><br></p>
+</div>
+</div>
+<div id="mbb-of-a-general-garma-model" class="section level1">
+<h1>MBB of a general Garma model</h1>
+<p>In this section we deal with the MBB estimation of a <em>GARMA</em> process using the <code>tsboot2</code> function from the <strong>dboot</strong> package. This is only a modified version of the <code>tsboot</code> function from the <strong>boot</strong> package, with similar arguments.</p>
 <pre class="r"><code>spec &lt;- GarmaSpec(&quot;PO&quot;,
                   phi = c(0.5,0.15), 
                   beta.x = c(1,1),
@@ -972,7 +976,7 @@ MBB &lt;- tsboot2(db,
                package = &quot;gamlss&quot;)
 #&gt; deviance of linear model=  655.8949 
 #&gt; deviance of  garma model=  568.2738
-#&gt; Warning: &lt;anonymous&gt;: ... may be used in an incorrect context: 'statistic(ran.gen(ts.orig[inds, ], n.sim, ran.args), ...)' (D:/Users/c056952/Documents/my-repo/dboot/R/tsboot2.R:162)
+#&gt; Warning: &lt;anonymous&gt;: ... may be used in an incorrect context: 'statistic(ran.gen(ts.orig[inds, ], n.sim, ran.args), ...)'
 
 #The original statistic (applied to the original series ):
 MBB$t0
@@ -1000,7 +1004,6 @@ apply(MBB$t,2, mean)
 <pre class="r"><code>library(gamlss.dist)
 ?gamlss.family
 </code></pre>
-</div>
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>
