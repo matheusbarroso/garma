@@ -92,7 +92,7 @@ setClass("GarmaSimBoot",
              return("'R' must be a positive integer.")
 
            if(!object@errorhandling %in% c("try","pass"))
-             return("unrecognised value of 'errorhandling',
+             return("unrecognized value of 'errorhandling',
 		accepted values are: 'try' and 'pass'.")
 
            if((object@errorhandling == "try")&&(object@n.try <= 0))
