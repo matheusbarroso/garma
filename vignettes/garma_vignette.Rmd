@@ -3,15 +3,15 @@ title: "Introduction to the garma Package"
 author: "Matheus de Vasconcellos Barroso"
 date: '`r Sys.Date()`'
 output:
-  html_document:
-    toc: yes
-    toc_depth: 2
-  md_document:
-    variant: markdown_github
   pdf_document:
     keep_tex: yes
     toc: yes
     toc_depth: '2'
+  md_document:
+    variant: markdown_github
+  html_document:
+    toc: yes
+    toc_depth: 2
 ---
 
 ```{r setup, include = FALSE}
@@ -464,8 +464,10 @@ summary(fit)
 
 
 <br>
-#MBB of a general Garma model 
-In this section we deal with the MBB estimation of a _GARMA_ process using the `tsboot2` function from the __dboot__ package. This is only a modified version of the `tboot` function from the __boot__ package, with similar arguments. 
+   
+#MBB of a general Garma model  
+
+In this section we deal with the MBB estimation of a _GARMA_ process using the `tsboot2` function from the __dboot__ package. This is only a modified version of the `tsboot` function from the __boot__ package, with similar arguments. 
 
 ```{r}
 spec <- GarmaSpec("PO",
