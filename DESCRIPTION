@@ -13,14 +13,16 @@ RoxygenNote: 6.0.1
 Depends: R(>= 3.4.0),dboot(>= 0.1.0), doParallel(>= 1.0.10), doRNG(>= 1.6.6), 
   ggplot2(>= 2.2.1), gamlss (>= 5.0-4)
 Imports: plyr(>= 1.8.4), reshape2(>= 1.4.2)
-Collate:
+Collate: 
     'GarmaSpec.R'
-    'GammaSpec.R'
     'GarmaSim.R'
+    'GarmaSimBoot.R'
+    'ConfidenceInterval.R'
+    'ConfidenceInterval-Generic.R'
+    'GammaSpec.R'
     'GarmaFit.R'
     'GarmaFit-Generic.R'
     'GarmaSim-Generic.R'
-    'GarmaSimBoot.R'
     'GarmaSimBoot-Generic.R'
     'GarmaSpec-Generic.R'
     'PoissonSpec.R'
