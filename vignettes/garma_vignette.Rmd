@@ -3,15 +3,15 @@ title: "Introduction to the garma Package"
 author: "Matheus de Vasconcellos Barroso"
 date: '`r Sys.Date()`'
 output:
+  html_document:
+    toc: yes
+    toc_depth: 2
+  md_document:
+    variant: markdown_github
   pdf_document:
     keep_tex: yes
     toc: yes
     toc_depth: '2'
-  md_document:
-    variant: markdown_github
-  html_document:
-    toc: yes
-    toc_depth: 2
 ---
 
 ```{r setup, include = FALSE}
@@ -419,7 +419,82 @@ plot(mbb3, type = "original-bias", scales = 'free')
 summary(mbb3)
 ```
 <br>
-#Estimation of a general Garma model 
+
+##ConfidenceInterval
+
+Provided a MBB object, another useful thing to do is to examine the behaviour of the simulated confidence intervals. This task is easy, with built-in functions handling it and also the task of computing coverage rates and default plots.
+
+Given a `GarmaSimBoot` object we can simultaneously perform confidence inteval computations for all the `nmonte` series (if `parallel = TRUE` and the parallel back-end registered). The methods `ConfidenceInterval`, `print`, `plot`, `summary` and `coverage` are implemented. The `ConfidenceInterval` method has the following parameters:
+
+* `garma.boot`: An object of the __GarmaSimBoot__ class, as provided by `GarmaSimBoot`.
+
+* `allow.parallel`: Logical `TRUE/FALSE` indicating whether parallel computation via the foreach package should be used. The default value is `TRUE`. OBS:paralllel backend must be registered prior to calling GarmaSim.
+
+* `conf`:  A scalar containing the confidence level 
+of the required interval(s). The default value is 0.95.
+
+
+The examples:
+
+1. `nmonte = 1`:
+
+```{r, message=FALSE,warning=FALSE, results='hide'}
+spec1 <- GarmaSim(
+GarmaSpec("GA",
+         phi = c(0.5),
+         beta.x = 1,
+         sigma2 = 2,
+         X = as.matrix(
+           data.frame(
+             x1 = rep(10,101)))),
+nmonte = 1, burnin = 0)
+
+boot1 <- GarmaSimBoot(spec1,l = 20 )
+
+ci <- ConfidenceInterval(boot1)
+print(ci)
+summary(ci)
+```
+```{r}
+coverage (ci)
+plot(ci) 
+```
+
+
+Note that we have information regarding the Normal, Basic, Bias Corrected and Percentile confidence intervals. In the case of `nmonte > 1` we just have do provide the respective tag for each ci (actually `type.ci` argument to the plot method): 'norm', 'basic', 'bias.c' and 'perc'. 
+
+2. `nmonte > 1`:
+```{r, message=FALSE,warning=FALSE, results='hide'}
+
+spec2 <- GarmaSim(
+GarmaSpec("GA",
+         phi = c(0.5),
+         beta.x = 1,
+         sigma2 = 2,
+         X = as.matrix(
+           data.frame(
+             x1 = rep(10,101)))),
+nmonte = 10, burnin = 0)
+
+boot2 <- GarmaSimBoot(spec2,l = c(5,15) )
+
+ci <- ConfidenceInterval(boot2)
+print(ci)
+summary(ci)
+```
+```{r}
+coverage (ci)
+plot(ci,type.ci='perc')
+plot(ci)  #norm ci
+
+```
+
+
+<br>
+    
+#Estimation of a general Garma model   
+
+    
 This section deals with the estimation of any garma model, making usage of the `garmaFit2` function from the __dboot__ package (an adapted version of the `garmaFit` function from  the __gamlss.util__ pkg). This is a general purpose function, handling families other than the ones in the exponential family, for details check the __gamlss.util__ package. The `GarmaFit` method is only a constructor from a `GarmaSim` object to the `garmaFit` function.
 <br>
 The minimal structure for estimating a __GARMA__ process is (as defined in the `garmaFit` function):

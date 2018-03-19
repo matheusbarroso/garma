@@ -21,7 +21,7 @@ NULL
 #'   \code{\link{ConfidenceInterval}}.
 #'
 #'@slot conf A scalar containing the confidence level 
-#'of the required interval(s).
+#'of the required interval(s). The default value is 0.95.
 #'
 #'@slot summary.out A data.frame with the mean 
 #'(w.r.t. \code{nmonte}) values for all block lengths,
