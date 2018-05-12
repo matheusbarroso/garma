@@ -42,7 +42,7 @@ setGeneric("GarmaSim", function(spec, ...) {
 #'\dontrun{
 #'#Incompatible dimensions x and beta.x:
 #'ex1 <- GarmaSim(
-#'GarmaSpec("GA", 
+#'GarmaSpec("GA",
 #'phi = c(0.2),
 #'theta = c(1,2,3),
 #'mu0 = 1:3,
@@ -54,7 +54,7 @@ setGeneric("GarmaSim", function(spec, ...) {
 #'
 #'#Incompatible number of rows
 #'ex2 <- GarmaSim(
-#'GarmaSpec("GA", 
+#'GarmaSpec("GA",
 #'phi = c(0.2),
 #'theta = c(1,2,3),
 #'mu0 = 1:3,
@@ -73,19 +73,19 @@ setGeneric("GarmaSim", function(spec, ...) {
 #'data.frame(
 #'intercept = rep(10,1100),
 #'x1 = c(rep(7,100),rep(2,1000))))),
-#'nmonte = 1, allow.parallel = TRUE) 
+#'nmonte = 1, allow.parallel = TRUE)
 #'
 #'ex4 <- GarmaSim(
-#'GarmaSpec("PO", 
+#'GarmaSpec("PO",
 #'phi = c(0.2),
 #'theta = c(1,2,3),
 #'mu0 = 1:3),
 #'nmonte = 2)
 #'
 #'ex5 <- GarmaSim(
-#'GarmaSpec("PO", 
+#'GarmaSpec("PO",
 #'mu0 = 10,
-#'phi = 0.15, 
+#'phi = 0.15,
 #'X = as.matrix(
 #'data.frame(
 #'  x1 = rep(10,101)))),
@@ -93,7 +93,7 @@ setGeneric("GarmaSim", function(spec, ...) {
 #'nmonte = 10)
 #'
 #'ex6 <- GarmaSim(
-#'GarmaSpec("GA", 
+#'GarmaSpec("GA",
 #'phi = c(0.2),
 #'theta = c(1,2,3),
 #'mu0 = 1:3,
@@ -105,7 +105,7 @@ setGeneric("GarmaSim", function(spec, ...) {
 #'nmonte = 2)
 #'
 #'ex7 <- GarmaSim(
-#'GarmaSpec("GA", 
+#'GarmaSpec("GA",
 #'phi = c(0.2),
 #'theta = c(1,2,3),
 #'mu0 = 1:3,
@@ -117,7 +117,7 @@ setGeneric("GarmaSim", function(spec, ...) {
 #'nmonte = 10)
 #'
 #'ex8 <- GarmaSim(
-#'GarmaSpec("PO", 
+#'GarmaSpec("PO",
 #'phi = c(0.5, 0.15),
 #'mu0 = c(1000, 1100),
 #'beta.x = c(1, 1),
@@ -129,11 +129,11 @@ setGeneric("GarmaSim", function(spec, ...) {
 #'nmonte = 10))
 #'
 #'ex9 <- GarmaSim(
-#'GarmaSpec("GA"), 
+#'GarmaSpec("GA"),
 #'nmonte = 10)
 #'
 #'ex10 <- GarmaSim(
-#'GarmaSpec("PO"), 
+#'GarmaSpec("PO"),
 #'nmonte = 10)
 #'
 #'
@@ -382,7 +382,7 @@ setMethod(f="plot",
               ggplot(data.frame(index_t = seq_len(x@nsteps), yt= x@value[[1]]$yt),
                      aes(x = index_t, y = yt)) + theme_bw() +geom_line() +
               ggtitle(paste("Simulated", paste(x@spec@family,"-Garma(",
-                                               x@order[1],",",x@order[2],")",	sep=""),"values through time")) +
+                                               x@order[1],",",x@order[2],")",	sep=""),"time series")) +
               theme(plot.title=element_text(size=rel(1.2), lineheight=.9,
                                             face="bold.italic", colour="gray26",hjust=0.5),
                     legend.position="none")

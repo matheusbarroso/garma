@@ -91,7 +91,7 @@ replicable examples. Default value is \bold{123}.}
 \dontrun{
 #Incompatible dimensions x and beta.x:
 ex1 <- GarmaSim(
-GarmaSpec("GA", 
+GarmaSpec("GA",
 phi = c(0.2),
 theta = c(1,2,3),
 mu0 = 1:3,
@@ -103,7 +103,7 @@ nmonte = 2)
 
 #Incompatible number of rows
 ex2 <- GarmaSim(
-GarmaSpec("GA", 
+GarmaSpec("GA",
 phi = c(0.2),
 theta = c(1,2,3),
 mu0 = 1:3,
@@ -122,19 +122,19 @@ X = as.matrix(
 data.frame(
 intercept = rep(10,1100),
 x1 = c(rep(7,100),rep(2,1000))))),
-nmonte = 1, allow.parallel = TRUE) 
+nmonte = 1, allow.parallel = TRUE)
 
 ex4 <- GarmaSim(
-GarmaSpec("PO", 
+GarmaSpec("PO",
 phi = c(0.2),
 theta = c(1,2,3),
 mu0 = 1:3),
 nmonte = 2)
 
 ex5 <- GarmaSim(
-GarmaSpec("PO", 
+GarmaSpec("PO",
 mu0 = 10,
-phi = 0.15, 
+phi = 0.15,
 X = as.matrix(
 data.frame(
  x1 = rep(10,101)))),
@@ -142,7 +142,7 @@ burnin = 0,
 nmonte = 10)
 
 ex6 <- GarmaSim(
-GarmaSpec("GA", 
+GarmaSpec("GA",
 phi = c(0.2),
 theta = c(1,2,3),
 mu0 = 1:3,
@@ -154,7 +154,7 @@ intercept = rep(4,1103),
 nmonte = 2)
 
 ex7 <- GarmaSim(
-GarmaSpec("GA", 
+GarmaSpec("GA",
 phi = c(0.2),
 theta = c(1,2,3),
 mu0 = 1:3,
@@ -166,7 +166,7 @@ x1  =rep(3,1103)))),
 nmonte = 10)
 
 ex8 <- GarmaSim(
-GarmaSpec("PO", 
+GarmaSpec("PO",
 phi = c(0.5, 0.15),
 mu0 = c(1000, 1100),
 beta.x = c(1, 1),
@@ -178,11 +178,11 @@ rep(2,1002))))),
 nmonte = 10))
 
 ex9 <- GarmaSim(
-GarmaSpec("GA"), 
+GarmaSpec("GA"),
 nmonte = 10)
 
 ex10 <- GarmaSim(
-GarmaSpec("PO"), 
+GarmaSpec("PO"),
 nmonte = 10)
 
 

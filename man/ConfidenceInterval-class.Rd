@@ -87,7 +87,7 @@ should be used. The default value is \code{TRUE}. OBS:paralllel
   \code{\link{ConfidenceInterval}}.}
 
 \item{\code{conf}}{A scalar containing the confidence level 
-of the required interval(s).}
+of the required interval(s). The default value is 0.95.}
 
 \item{\code{summary.out}}{A data.frame with the mean 
 (w.r.t. \code{nmonte}) values for all block lengths,
